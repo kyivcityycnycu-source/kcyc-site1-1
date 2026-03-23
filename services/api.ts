@@ -68,7 +68,7 @@ export const submitContactForm = async (data: ContactFormData): Promise<{ succes
 
     return { 
       success: true, 
-      message: 'Дякуємо! Ваша заявка успішно збережена.' 
+      message: 'Дякуємо! Ваша заявка успішно відправлена.' 
     };
   } catch (error) {
     console.error("Error adding document: ", error);
@@ -89,7 +89,7 @@ export const submitSupportForm = async (data: SupportFormData): Promise<{ succes
 
     return { 
       success: true, 
-      message: 'Дякуємо! Ваша ініціатива успішно надіслана.' 
+      message: 'Дякуємо! Ваша ініціатива успішно відправлена.' 
     };
   } catch (error) {
     console.error("Error adding support request: ", error);
@@ -113,7 +113,7 @@ export const submitApplicationForm = async (data: ApplicationFormData): Promise<
 
     return { 
       success: true, 
-      message: 'Заявка успішно надіслана!' 
+      message: 'Заявка успішно відправлена!' 
     };
   } catch (error) {
     console.error("Error adding application: ", error);
