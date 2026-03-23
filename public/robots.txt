@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Забороняємо індексацію адміністративної панелі (якщо вона є)
+Disallow: /admin/
+
+Sitemap: https://kcyc.kyiv.ua/sitemap.xml

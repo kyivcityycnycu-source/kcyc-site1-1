@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#031B47" />
+    <title>Київська Міська Молодіжна Рада | КММР</title>
+    
+    <!-- Основні SEO теги -->
+    <meta name="description" content="Київська Міська Молодіжна Рада (КММР) —  Найбільше волонтерське молодіжне обʼєднання Києва. Платформа для твого розвитку, реалізації ідей та впливу на життя столиці. Ставай частиною змін вже сьогодні." />
+    <meta name="keywords" content="КММР, Київська Міська Молодіжна Рада, молодь Києва, молодіжна політика, громадські організації, волонтерство, молодіжні ініціативи" />
+    <meta name="author" content="Київська Міська Молодіжна Рада" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook (для красивих посилань у соцмережах) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kcyc.kyiv.ua/" />
+    <meta property="og:title" content="Київська Міська Молодіжна Рада | КММР" />
+    <meta property="og:description" content="Офіційний сайт Київської Міської Молодіжної Ради. Ми об'єднуємо активну молодь для створення кращого майбутнього нашого міста." />
+    <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2FGroup%206680%20(1).png?alt=media&token=a82c8a88-8e02-40ba-9bcc-9126138fe47e" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://kcyc.kyiv.ua/" />
+    <meta property="twitter:title" content="Київська Міська Молодіжна Рада | КММР" />
+    <meta property="twitter:description" content="Офіційний сайт Київської Міської Молодіжної Ради. Ми об'єднуємо активну молодь для створення кращого майбутнього нашого міста." />
+    <meta property="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2FGroup%206680%20(1).png?alt=media&token=a82c8a88-8e02-40ba-9bcc-9126138fe47e" />
+    
+    <!-- Dynamic Favicon Link -->
+    <link id="dynamic-favicon" rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2FGroup%206680%20(1).png?alt=media&token=a82c8a88-8e02-40ba-9bcc-9126138fe47e" />
+
+    <!-- Favicon Logic -->
+    <script>
+      (function() {
+        const lightIcon = "https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2FGroup%206680%20(1).png?alt=media&token=a82c8a88-8e02-40ba-9bcc-9126138fe47e";
+        const darkIcon = "https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2FFrame%201018%20(1).png?alt=media&token=a44eebf0-272c-4d07-9c14-83b8eb86af7e";
+
+        function updateFavicon() {
+          const favicon = document.getElementById('dynamic-favicon');
+          const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (favicon) {
+            favicon.href = isDark ? darkIcon : lightIcon;
+          }
+        }
+
+        // Run immediately
+        updateFavicon();
+
+        // Listen for changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateFavicon);
+      })();
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Montserrat', 'sans-serif'],
+            },
+            colors: {
+              kmmr: {
+                blue: '#031B47',
+                pink: '#D7269B',
+                green: '#8BC442',
+                orange: '#FA8700',
+                purple: '#3F1B65',
+                yellow: '#FFEB3A',
+                brown: '#6D351A',
+                mint: '#BBFFE4'
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      html, body {
+        font-family: 'Montserrat', sans-serif;
+        background-color: #031B47;
+        margin: 0;
+        padding: 0;
+      }
+      #root {
+        min-height: 100vh;
+        background-color: #ffffff;
+      }
+      html.dark #root {
+        background-color: #030712; /* gray-950 */
+      }
+
+      /* Custom scrollbar for better aesthetics */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      .dark ::-webkit-scrollbar-track {
+        background: #1f2937;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #031B47;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #D7269B;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
