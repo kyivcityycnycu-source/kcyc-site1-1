@@ -4,4 +4,4 @@ Allow: /
 # Забороняємо індексацію адміністративної панелі (якщо вона є)
 Disallow: /admin/
 
-Sitemap: https://kcyc.kyiv.ua/sitemap.xml
+Sitemap: https://kmmr.org/sitemap.xml

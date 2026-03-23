@@ -15,7 +15,7 @@ export const SEO: React.FC<SEOProps> = ({
   title,
   description,
   keywords,
-  url = 'https://kcyc.kyiv.ua/',
+  url = 'https://kmmr.org/',
   image = 'https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2FGroup%206680%20(1).png?alt=media&token=a82c8a88-8e02-40ba-9bcc-9126138fe47e',
   type = 'website',
 }) => {
