@@ -24,6 +24,8 @@ export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = (
     commTag: 'Тег для зв\'язку',
     repName: 'ПІБ представника',
     projectTitle: 'Назва проєкту',
+    university: 'Навчальний заклад',
+    specialization: 'Спеціальність',
   };
 
   const getMainDetails = () => {
@@ -34,6 +36,15 @@ export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = (
         displayPhone: application.phone,
         displaySocial: application.commTag || application.socialTag || application.orgSocial,
         displayTitle: application.projectTitle || 'Підтримка ініціативи'
+      };
+    }
+    if (application.formType === 'internship_registration') {
+      return {
+        displayName: application.name || 'Не вказано',
+        displayEmail: application.email,
+        displayPhone: application.phone,
+        displaySocial: null,
+        displayTitle: 'Реєстрація на практику'
       };
     }
     return {

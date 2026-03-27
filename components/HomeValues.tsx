@@ -22,14 +22,17 @@ export const HomeValues: React.FC = () => {
                />
              </div>
            </div>
-           <div className="order-1 md:order-2">
-             <h2 className="text-4xl font-black text-kmmr-blue dark:text-white mb-6 whitespace-pre-line">
-               {t('values.title')}
-             </h2>
-             <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
-               {t('values.desc')}
-             </p>
-             <ul className="space-y-4">
+            <div className="order-1 md:order-2">
+              <h2 className="text-4xl font-black text-kmmr-blue dark:text-white mb-6 whitespace-pre-line">
+                {t('values.title')}
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
+                {t('values.desc')}
+              </p>
+              <p className="text-sm font-bold text-kmmr-pink uppercase tracking-wider mb-4">
+                {t('values.subtitle')}
+              </p>
+              <ul className="space-y-4">
                {[
                  t('values.list1'),
                  t('values.list2'),

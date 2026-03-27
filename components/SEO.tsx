@@ -26,8 +26,8 @@ export const SEO: React.FC<SEOProps> = ({
     : 'Kyiv City Youth Council | KCYC';
     
   const defaultDescription = language === 'uk'
-    ? "Київська Міська Молодіжна Рада (КММР) —  Найбільше волонтерське молодіжне обʼєднання Києва. Платформа для твого розвитку, реалізації ідей та впливу на життя столиці. Ставай частиною змін вже сьогодні."
-    : "Kyiv City Youth Council (KCMY) — Kyiv's largest volunteer youth association. A platform for your development, realization of ideas, and influence on the life of the capital. Become part of the change today.";
+    ? "Київська Міська Молодіжна Рада (КММР) —  Найбільше волонтерське молодіжне обʼєднання Києва. Платформа для консолідованої взаємодії учасників молодіжної політики міста Київ, з метою спільної роботи над розвитком молодіжної сфери та формування активної всебічно розвиненої молодої особистості."
+    : "Kyiv City Youth Council (KCMY) — Kyiv's largest volunteer youth association. A platform for consolidated interaction of youth policy participants in the city of Kyiv, with the aim of joint work on the development of the youth sphere and the formation of an active, comprehensively developed young personality.";
 
   const defaultKeywords = language === 'uk'
     ? 'КММР, Київська Міська Молодіжна Рада, молодь Києва, молодіжна політика, громадські організації, волонтерство, молодіжні ініціативи'

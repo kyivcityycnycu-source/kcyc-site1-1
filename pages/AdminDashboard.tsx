@@ -15,8 +15,8 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 import { db, storage } from '../firebaseConfig';
 
 import { useAuth } from '../context/AuthContext';
-
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 import { ContactSubmission, DocumentItem, Project, Opportunity, TeamMember, Department, PartnerItem, PartnerType, DonationRequisite } from '../types';
 
@@ -34,6 +34,7 @@ export const AdminDashboard: React.FC = () => {
   const { logout } = useAuth();
 
   const { theme, toggleTheme } = useTheme();
+  const { language } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<'submissions' | 'projects' | 'docs' | 'opportunities' | 'team' | 'partners' | 'donations'>('submissions');
 
@@ -83,9 +84,9 @@ export const AdminDashboard: React.FC = () => {
 
   // Submission Filters
 
-  const [submissionFilter, setSubmissionFilter] = useState<'all' | 'contact' | 'application' | 'newsletter' | 'support'>('all');
+  const [submissionFilter, setSubmissionFilter] = useState<'event' | 'opportunity' | 'contact' | 'newsletter' | 'support' | 'internship'>('event');
 
-  const [selectedEventFilter, setSelectedEventFilter] = useState<string>('all');
+  const [selectedDynamicFilter, setSelectedDynamicFilter] = useState<string>('all');
 
 
 
@@ -1133,92 +1134,95 @@ export const AdminDashboard: React.FC = () => {
 
 
 
-  // --- EXTRACT UNIQUE EVENTS FOR FILTER ---
+  // --- EXTRACT DYNAMIC FILTER OPTIONS ---
 
-  const uniqueEvents = useMemo(() => {
-
-    const events = new Set<string>();
-
+  const dynamicFilterOptions = useMemo(() => {
+    const options = new Set<string>();
     submissions.forEach((sub: any) => {
-
-      if (sub.formType === 'opportunity_application' && sub.opportunityTitle) {
-
-        events.add(sub.opportunityTitle);
-
+      if (submissionFilter === 'event' || submissionFilter === 'opportunity') {
+        if (sub.formType === 'opportunity_application' && sub.opportunityTitle) {
+          const subType = (sub as any).type;
+          if (submissionFilter === 'event' && subType === 'Event') {
+            options.add(sub.opportunityTitle);
+          } else if (submissionFilter === 'opportunity' && subType !== 'Event') {
+            options.add(sub.opportunityTitle);
+          }
+        }
+      } else if (submissionFilter === 'contact') {
+        if (sub.formType === 'general_contact' && sub.department) {
+          options.add(sub.department);
+        }
+      } else if (submissionFilter === 'support') {
+        if (sub.formType === 'initiative_support' && sub.supportType) {
+          options.add(sub.supportType);
+        }
       }
-
     });
-
-    return Array.from(events);
-
-  }, [submissions]);
+    return Array.from(options).sort();
+  }, [submissions, submissionFilter]);
 
 
 
   // --- FILTER LOGIC ---
 
   const getFilteredSubmissions = () => {
-
-    return submissions.filter(sub => {
-
+    let filtered = submissions.filter(sub => {
       const type = (sub as any).formType;
+      const subType = (sub as any).type;
 
+      if (submissionFilter === 'newsletter') return type === 'newsletter';
+      if (submissionFilter === 'support') return type === 'initiative_support';
+      if (submissionFilter === 'internship') return type === 'internship_registration';
+      if (submissionFilter === 'contact') return type === 'general_contact';
       
-
-      // If we are looking for Newsletter subscribers
-
-      if (submissionFilter === 'newsletter') {
-
-         return type === 'newsletter';
-
+      if (submissionFilter === 'event') {
+        return type === 'opportunity_application' && subType === 'Event';
       }
-
-
-
-      // If we are looking for Support Requests
-
-      if (submissionFilter === 'support') {
-
-         return type === 'initiative_support';
-
-      }
-
-
-
-      // If we are looking for other tabs, EXCLUDE special items
-
-      if (type === 'newsletter' || type === 'initiative_support') return false;
-
-
-
-      const isApp = type === 'opportunity_application';
-
       
-
-      // 1. Filter by Type
-
-      if (submissionFilter === 'application' && !isApp) return false;
-
-      if (submissionFilter === 'contact' && isApp) return false;
-
-
-
-      // 2. Filter by Event (only if showing applications or all)
-
-      if (selectedEventFilter !== 'all') {
-
-         if (!isApp) return false; // Hide contacts if filtering by specific event
-
-         if ((sub as any).opportunityTitle !== selectedEventFilter) return false;
-
+      if (submissionFilter === 'opportunity') {
+        return type === 'opportunity_application' && subType !== 'Event';
       }
 
-
-
-      return true;
-
+      return false;
     });
 
+    // Apply Dynamic Filter if active
+    if (selectedDynamicFilter !== 'all') {
+      if (submissionFilter === 'event' || submissionFilter === 'opportunity') {
+        filtered = filtered.filter(sub => (sub as any).opportunityTitle === selectedDynamicFilter);
+      } else if (submissionFilter === 'contact') {
+        filtered = filtered.filter(sub => (sub as any).department === selectedDynamicFilter);
+      } else if (submissionFilter === 'support') {
+        filtered = filtered.filter(sub => (sub as any).supportType === selectedDynamicFilter);
+      }
+    }
+
+    // Apply Sorting
+    return [...filtered].sort((a: any, b: any) => {
+      if (submissionFilter === 'event' || submissionFilter === 'opportunity') {
+        const titleA = a.opportunityTitle || '';
+        const titleB = b.opportunityTitle || '';
+        return titleA.localeCompare(titleB);
+      }
+      if (submissionFilter === 'contact') {
+        const getDeptName = (id: string) => {
+          const dept = departments.find(d => d.id === id);
+          return dept ? (language === 'en' && dept.nameEn ? dept.nameEn : dept.name) : id;
+        };
+        const deptA = getDeptName(a.department || '');
+        const deptB = getDeptName(b.department || '');
+        return deptA.localeCompare(deptB);
+      }
+      if (submissionFilter === 'support') {
+        const typeA = a.supportType || '';
+        const typeB = b.supportType || '';
+        return typeA.localeCompare(typeB);
+      }
+      // Default sort by date (already handled by listener but good to keep as fallback)
+      const dateA = a.createdAt?.seconds || 0;
+      const dateB = b.createdAt?.seconds || 0;
+      return dateB - dateA;
+    });
   };
 
 
@@ -1353,6 +1357,8 @@ export const AdminDashboard: React.FC = () => {
 
       const isSupport = (sub as any).formType === 'initiative_support';
 
+      const isInternship = (sub as any).formType === 'internship_registration';
+
       const date = sub.createdAt && typeof sub.createdAt === 'object' 
 
         ? new Date((sub.createdAt as any).seconds * 1000).toLocaleString('uk-UA') 
@@ -1369,7 +1375,7 @@ export const AdminDashboard: React.FC = () => {
 
         "Статус": sub.status,
 
-        "Тип": isSupport ? 'Підтримка ініціативи' : isApp ? 'Реєстрація' : 'Контакт',
+        "Тип": isSupport ? 'Підтримка ініціативи' : isInternship ? 'Практика' : isApp ? 'Реєстрація' : 'Контакт',
 
         "Ім'я / Організація": isSupport ? (sub as any).orgName : sub.name,
 
@@ -1378,6 +1384,10 @@ export const AdminDashboard: React.FC = () => {
         "Телефон": sub.phone,
 
         "Email": sub.email,
+
+        "Навчальний заклад": (sub as any).university || '-',
+
+        "Спеціальність": (sub as any).specialization || '-',
 
         "Тег для комунікації": (sub as any).commTag || (sub as any).socialTag || '-',
 
@@ -2218,7 +2228,7 @@ export const AdminDashboard: React.FC = () => {
 
           <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
 
-            {activeTab === 'submissions' && 'Заявки волонтерів'}
+            {activeTab === 'submissions' && 'Заявки'}
 
             {activeTab === 'projects' && 'Керування Проєктами'}
 
@@ -2253,92 +2263,75 @@ export const AdminDashboard: React.FC = () => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
 
                 <div className="flex flex-wrap gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
-
                   <button 
-
-                    onClick={() => { setSubmissionFilter('all'); setSelectedEventFilter('all'); }}
-
-                    className={`px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all ${submissionFilter === 'all' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
-
+                    onClick={() => { setSubmissionFilter('event'); setSelectedDynamicFilter('all'); }}
+                    className={`px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all ${submissionFilter === 'event' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
                   >
-
-                    Всі
-
+                    Події
                   </button>
-
                   <button 
-
-                    onClick={() => { setSubmissionFilter('contact'); setSelectedEventFilter('all'); }}
-
+                    onClick={() => { setSubmissionFilter('opportunity'); setSelectedDynamicFilter('all'); }}
+                    className={`px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all ${submissionFilter === 'opportunity' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                  >
+                    Можливості
+                  </button>
+                  <button 
+                    onClick={() => { setSubmissionFilter('contact'); setSelectedDynamicFilter('all'); }}
                     className={`px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all ${submissionFilter === 'contact' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
-
                   >
-
-                    Зв'язок
-
+                    Волонтери
                   </button>
-
                   <button 
-
-                    onClick={() => setSubmissionFilter('application')}
-
-                    className={`px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all ${submissionFilter === 'application' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
-
-                  >
-
-                    Реєстрації
-
-                  </button>
-
-                  <button 
-
-                    onClick={() => setSubmissionFilter('support')}
-
+                    onClick={() => { setSubmissionFilter('support'); setSelectedDynamicFilter('all'); }}
                     className={`px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all ${submissionFilter === 'support' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
-
                   >
-
                     Підтримка
-
                   </button>
-
                   <button 
-
-                    onClick={() => setSubmissionFilter('newsletter')}
-
-                    className={`px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all ${submissionFilter === 'newsletter' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
-
+                    onClick={() => { setSubmissionFilter('internship'); setSelectedDynamicFilter('all'); }}
+                    className={`px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all ${submissionFilter === 'internship' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
                   >
-
-                    Розсилка
-
+                    Практика
                   </button>
-
+                  <button 
+                    onClick={() => { setSubmissionFilter('newsletter'); setSelectedDynamicFilter('all'); }}
+                    className={`px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all ${submissionFilter === 'newsletter' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                  >
+                    Розсилка
+                  </button>
                 </div>
 
                 
 
-                {/* Event Dropdown Filter */}
+                {/* Dynamic Dropdown Filter */}
 
-                {submissionFilter !== 'contact' && submissionFilter !== 'newsletter' && submissionFilter !== 'support' && uniqueEvents.length > 0 && (
+                {submissionFilter !== 'newsletter' && submissionFilter !== 'internship' && dynamicFilterOptions.length > 0 && (
 
                    <div className="relative w-full sm:w-auto">
 
                       <select 
 
-                        value={selectedEventFilter}
+                        value={selectedDynamicFilter}
 
-                        onChange={(e) => setSelectedEventFilter(e.target.value)}
+                        onChange={(e) => setSelectedDynamicFilter(e.target.value)}
 
                         className="w-full appearance-none pl-4 pr-10 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:border-kmmr-blue focus:outline-none focus:ring-2 focus:ring-kmmr-blue/20 cursor-pointer sm:min-w-[200px]"
 
                       >
 
-                         <option value="all">Всі події</option>
+                         <option value="all">
+                           {submissionFilter === 'contact' ? 'Всі департаменти' : 
+                            submissionFilter === 'support' ? 'Всі типи підтримки' : 
+                            'Всі події'}
+                         </option>
 
-                         {uniqueEvents.map(event => (
+                         {dynamicFilterOptions.map(opt => (
 
-                           <option key={event} value={event}>{event}</option>
+                           <option key={opt} value={opt}>
+                             {submissionFilter === 'contact' ? (
+                               departments.find(d => d.id === opt) ? (language === 'en' && departments.find(d => d.id === opt)?.nameEn ? departments.find(d => d.id === opt)?.nameEn : departments.find(d => d.id === opt)?.name) : opt
+                             ) : opt}
+                           </option>
 
                          ))}
 
@@ -2401,6 +2394,8 @@ export const AdminDashboard: React.FC = () => {
                   const isApp = (sub as any).formType === 'opportunity_application';
 
                   const isSupport = (sub as any).formType === 'initiative_support';
+
+                  const isInternship = (sub as any).formType === 'internship_registration';
 
 
 
@@ -2710,6 +2705,8 @@ export const AdminDashboard: React.FC = () => {
 
                         const isSupport = (sub as any).formType === 'initiative_support';
 
+                        const isInternship = (sub as any).formType === 'internship_registration';
+
                         return (
 
                         <tr 
@@ -2749,6 +2746,18 @@ export const AdminDashboard: React.FC = () => {
                                       <span className="text-sm font-bold text-gray-800 dark:text-gray-200 leading-tight">{(sub as any).opportunityTitle}</span>
 
                                       <span className="text-xs text-gray-500 dark:text-gray-400">{(sub as any).type}</span>
+
+                                  </div>
+
+                              ) : isInternship ? (
+
+                                  <div className="flex flex-col">
+
+                                      <span className="text-[10px] font-black uppercase tracking-wider text-kmmr-blue dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded w-fit mb-1">Практика</span>
+
+                                      <span className="text-sm font-bold text-gray-800 dark:text-gray-200 leading-tight">{(sub as any).university}</span>
+
+                                      <span className="text-xs text-gray-500 dark:text-gray-400">{(sub as any).specialization}</span>
 
                                   </div>
 

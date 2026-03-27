@@ -70,7 +70,7 @@ export const ContactsSection: React.FC = () => {
   };
 
   return (
-    <div className="py-24 bg-gray-50 dark:bg-[#0F172A] text-gray-900 dark:text-white relative overflow-hidden flex items-center justify-center transition-colors duration-300">
+    <div id="contacts" className="py-24 bg-gray-50 dark:bg-[#0F172A] text-gray-900 dark:text-white relative overflow-hidden flex items-center justify-center transition-colors duration-300">
        {/* Background decorative circles - Unique Colors for Contacts */}
        <div className="absolute top-0 left-0 w-96 h-96 bg-kmmr-pink/30 rounded-full blur-[100px] translate-y-[-20%] translate-x-[-20%]"></div>
        <div className="absolute bottom-0 right-0 w-96 h-96 bg-kmmr-green/20 rounded-full blur-[100px] translate-y-[20%] translate-x-[20%]"></div>

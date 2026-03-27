@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { SDGS_UK, SDGS_EN, PARTNER_GROUPS_UK, PARTNER_GROUPS_EN, TIMELINE_EVENTS_UK, TIMELINE_EVENTS_EN } from '../constants';
-import { Target, Flag, Users, HeartHandshake } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { SDGS_UK, SDGS_EN, PARTNER_GROUPS_UK, PARTNER_GROUPS_EN, TIMELINE_EVENTS_UK, TIMELINE_EVENTS_EN, CAPACITY_UK, CAPACITY_EN } from '../constants';
+import { Target, Flag, Users, HeartHandshake, X, Facebook, Instagram, Linkedin, Send, Youtube } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { motion, AnimatePresence } from 'motion/react';
 import { onSnapshot, collection } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { PartnerItem, PartnerType } from '../types';
+import { InternshipModal } from './InternshipModal';
 
 export const AboutSection: React.FC = () => {
   const { language, t } = useLanguage();
+  const navigate = useNavigate();
   const [fetchedPartners, setFetchedPartners] = useState<PartnerItem[]>([]);
   const [fetchedPartnerTypes, setFetchedPartnerTypes] = useState<PartnerType[]>([]);
+  const [isSocialModalOpen, setIsSocialModalOpen] = useState(false);
+  const [isInternshipModalOpen, setIsInternshipModalOpen] = useState(false);
   
   const sdgs = language === 'uk' ? SDGS_UK : SDGS_EN;
+  const capacity = language === 'uk' ? CAPACITY_UK : CAPACITY_EN;
   const staticPartnerGroups = language === 'uk' ? PARTNER_GROUPS_UK : PARTNER_GROUPS_EN;
   const timeline = language === 'uk' ? TIMELINE_EVENTS_UK : TIMELINE_EVENTS_EN;
 
@@ -177,6 +184,84 @@ export const AboutSection: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Capacity Section */}
+      <div className="bg-white dark:bg-gray-900 py-20 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <span className="text-kmmr-pink font-bold uppercase tracking-widest text-sm mb-2 block">{t('about.capacity.tag')}</span>
+            <h2 className="text-3xl font-black text-kmmr-blue dark:text-white mb-4 uppercase tracking-tight">{t('about.capacity.title')}</h2>
+            <div className="w-24 h-1 bg-kmmr-pink mx-auto rounded-full"></div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {capacity.map((item, idx) => (
+              <motion.div 
+                key={idx} 
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ 
+                  duration: 0.5, 
+                  delay: idx * 0.1,
+                  type: "spring",
+                  stiffness: 100
+                }}
+                whileHover={{ y: -8 }}
+                onClick={() => {
+                  if (idx === 0) {
+                    setIsSocialModalOpen(true);
+                  } else if (idx === 1) {
+                    setIsInternshipModalOpen(true);
+                  } else if ([2, 3, 5].includes(idx)) {
+                    navigate('/support');
+                  } else if (idx === 4) {
+                    navigate('/?scroll=join');
+                  }
+                }}
+                className={`group relative p-8 rounded-[2.5rem] text-white overflow-hidden shadow-2xl flex flex-col justify-between border border-white/10 min-h-[380px] ${[0, 1, 2, 3, 4, 5].includes(idx) ? 'cursor-pointer' : ''}`}
+                style={{ backgroundColor: item.color }}
+              >
+                {/* Animated Background Gradients */}
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/20 rounded-full blur-[80px] group-hover:bg-white/30 transition-all duration-700 group-hover:scale-150"></div>
+                <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-black/10 rounded-full blur-[60px] group-hover:bg-black/20 transition-all duration-700"></div>
+                
+                {/* Glass Overlay for Depth */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex justify-between items-start mb-8">
+                    <div className="bg-white/15 p-4 rounded-2xl backdrop-blur-md border border-white/20 shadow-inner group-hover:rotate-12 transition-transform duration-500">
+                      <item.icon size={32} className="text-white" />
+                    </div>
+                    <div className="text-white/30 font-black text-4xl select-none group-hover:text-white/50 transition-colors">
+                      0{idx + 1}
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-2xl font-black mb-4 leading-tight tracking-tight">
+                    {item.title}
+                  </h3>
+                  <p className="text-white/85 leading-relaxed font-medium text-sm md:text-base">
+                    {item.description}
+                  </p>
+                </div>
+                
+                {/* Interactive Bottom Element - Option A: Specific CTA */}
+                <div className="relative z-10 mt-8 flex items-center gap-2 text-sm font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                  <div className="h-[2px] w-8 bg-white"></div>
+                  <span>{item.cta}</span>
+                </div>
+                
+                {/* Large Watermark Icon */}
+                <div className="absolute -bottom-10 -right-10 opacity-[0.07] group-hover:opacity-[0.15] group-hover:scale-125 group-hover:-rotate-12 transition-all duration-700 pointer-events-none">
+                  <item.icon size={180} />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
       
       {/* Detailed Partners Section (Dynamic) */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
@@ -289,6 +374,77 @@ export const AboutSection: React.FC = () => {
         </div>
       </div>
 
+      {/* Social Media Modal */}
+      <AnimatePresence>
+        {isSocialModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white dark:bg-gray-900 rounded-[2.5rem] w-full max-w-lg overflow-hidden shadow-2xl relative"
+            >
+              <button 
+                onClick={() => setIsSocialModalOpen(false)}
+                className="absolute top-6 right-6 p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-kmmr-pink transition-colors z-10"
+              >
+                <X size={24} />
+              </button>
+
+              <div className="p-10">
+                <div className="text-center mb-8">
+                  <div className="w-20 h-20 bg-kmmr-green/10 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                    <Users className="text-kmmr-green w-10 h-10" />
+                  </div>
+                  <h3 className="text-3xl font-black text-kmmr-blue dark:text-white uppercase tracking-tight">
+                    {language === 'uk' ? 'Наші соцмережі' : 'Our Social Media'}
+                  </h3>
+                  <p className="text-gray-500 dark:text-gray-400 mt-2 font-medium">
+                    {language === 'uk' ? 'Будь в курсі всіх новин та подій' : 'Stay updated with all news and events'}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { icon: Instagram, name: 'Instagram', url: 'https://www.instagram.com/kyiv.city.yc.nycu/', color: 'hover:bg-pink-500' },
+                    { icon: Facebook, name: 'Facebook', url: 'https://www.facebook.com/kyiv.city.yc.nycu/', color: 'hover:bg-blue-600' },
+                    { icon: Send, name: 'Telegram', url: 'https://t.me/Kyiv_City_Youth_Council', color: 'hover:bg-blue-400' },
+                    { icon: Linkedin, name: 'LinkedIn', url: 'https://www.linkedin.com/company/kyiv-city-youth-council?originalSubdomain=ua', color: 'hover:bg-blue-700' },
+                    { icon: Youtube, name: 'YouTube', url: 'https://www.youtube.com/@kyiv_city_youth_council', color: 'hover:bg-red-600' }
+                  ].map((social, i) => (
+                    <a 
+                      key={i}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex flex-col items-center justify-center p-6 rounded-3xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 transition-all duration-300 group ${social.color} hover:text-white hover:border-transparent hover:-translate-y-1 ${i === 0 ? 'col-span-2' : ''}`}
+                    >
+                      <social.icon size={32} className="mb-3 transition-transform group-hover:scale-110" />
+                      <span className="font-bold text-sm uppercase tracking-wider">{social.name}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-800/80 p-6 text-center border-t border-gray-100 dark:border-gray-700">
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                  {language === 'uk' ? 'Долучайся до нашої спільноти!' : 'Join our community!'}
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Internship Registration Modal */}
+      <AnimatePresence>
+        {isInternshipModalOpen && (
+          <InternshipModal 
+            isOpen={isInternshipModalOpen} 
+            onClose={() => setIsInternshipModalOpen(false)} 
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Facebook, Instagram, Youtube, Mail, MapPin, Phone, Heart, Loader2, Check } from 'lucide-react';
+import { Facebook, Instagram, Youtube, Mail, MapPin, Phone, Heart, Loader2, Check, Linkedin } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { DonationModal } from './DonationModal';
 import { Logo } from './Logo';
@@ -142,6 +142,9 @@ export const Footer: React.FC = () => {
                 </a>
                 <a href="https://t.me/Kyiv_City_Youth_Council" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-500 transition-all duration-300 transform hover:-translate-y-1">
                   <TelegramIcon className="w-5 h-5" />
+                </a>
+                <a href="https://www.linkedin.com/company/kyiv-city-youth-council?originalSubdomain=ua" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-700 transition-all duration-300 transform hover:-translate-y-1">
+                  <Linkedin className="w-5 h-5" />
                 </a>
                 <a href="https://www.youtube.com/@kyiv_city_youth_council" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-red-600 transition-all duration-300 transform hover:-translate-y-1">
                   <Youtube className="w-5 h-5" />

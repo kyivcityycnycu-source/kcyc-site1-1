@@ -1,16 +1,22 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { trackEvent } from '../services/analytics';
+import { scrollToSection } from '../lib/scroll';
 
 export const HeroSection: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useLanguage();
 
   const handleJoinClick = () => {
     trackEvent('Hero', 'Click Join Team', 'Hero Section');
-    navigate('/contacts');
+    if (location.pathname === '/') {
+      scrollToSection('contacts');
+    } else {
+      navigate('/contacts');
+    }
   };
 
   const handleSupportClick = () => {

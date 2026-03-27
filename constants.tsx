@@ -19,7 +19,12 @@ import {
   Calendar,
   TrendingUp,
   Shield,
-  AlertCircle
+  AlertCircle,
+  MessageSquare,
+  Video,
+  MapPin,
+  ShieldCheck,
+  Building
 } from 'lucide-react';
 import { Department, Opportunity, Project, SDG, TeamMember, FocusArea, DocumentItem, PartnerGroup } from './types';
 
@@ -49,70 +54,133 @@ export const NAV_LINKS_EN = [
 
 export const NAV_LINKS = NAV_LINKS_UK;
 
-// --- FOCUS AREAS ---
-export const FOCUS_AREAS_UK: FocusArea[] = [
+// --- PRINCIPLES OF ACTIVITY ---
+export const PRINCIPLES_UK = [
   {
     id: 'participation',
-    title: 'Молодь та участь',
-    description: 'Залучення молоді до процесів прийняття рішень та громадського життя міста.',
+    title: 'Участь',
+    description: 'Визнаємо право кожної молодої особи на участь в ухваленні рішень міста.',
+    theses: [
+      'Залучення до реалізації власних планів та ініціатив громади.',
+      'Розвиток компетентностей та двосторонній обмін досвідом.',
+      'Участь активістів у плануванні та житті КММР.'
+    ],
     icon: Users,
     color: 'bg-kmmr-blue dark:bg-blue-400'
   },
   {
-    id: 'career',
-    title: 'Зайнятість та кар\'єра',
-    description: 'Створення можливостей для працевлаштування, стажування та професійного розвитку.',
-    icon: Briefcase,
+    id: 'cooperation',
+    title: 'Співпраця',
+    description: 'Забезпечуємо взаємодію та співпрацю між різними групами для досягнення спільних цілей.',
+    theses: [
+      'Об\'єднання зусиль для реалізації спільних проєктів.',
+      'Партнерство з усіма ОГС та молодіжними ініціативами.',
+      'Постійний діалог як основа розвитку молодіжного руху.'
+    ],
+    icon: HeartHandshake,
     color: 'bg-kmmr-pink'
   },
   {
-    id: 'education',
-    title: 'Освіта та розвиток',
-    description: 'Неформальна освіта, тренінги та просвітницькі заходи для молоді.',
-    icon: GraduationCap,
+    id: 'openness',
+    title: 'Відкритість',
+    description: 'Сприяємо залученню громадськості до діалогу та прозорості ухвалення рішень.',
+    theses: [
+      'Зрозумілість процесів та вільний доступ до результатів роботи.',
+      'Публічне обговорення, реакція на критику та відповідальність.',
+      'Побудова довіри всередині інституції та з громадськістю.'
+    ],
+    icon: Eye,
     color: 'bg-kmmr-green'
   },
   {
-    id: 'civil-society',
-    title: 'Громадянське суспільство',
-    description: 'Розвиток волонтерства та підтримка молодіжних ініціатив.',
-    icon: HeartHandshake,
+    id: 'development',
+    title: 'Розвиток',
+    description: 'Впливаємо на ухвалення рішень владою та впроваджуємо інновації.',
+    theses: [
+      'Формування нових стандартів міської молодіжної політики.',
+      'Впровадження інновацій та підтримка молодіжних ініціатив.',
+      'Постійне вдосконалення професійних навичок команди.'
+    ],
+    icon: TrendingUp,
     color: 'bg-kmmr-orange'
+  },
+  {
+    id: 'diversity',
+    title: 'Різноманітність',
+    description: 'Враховуємо інтереси молодих людей різних соціальних груп.',
+    theses: [
+      'Підтримка потреб молоді незалежно від соціального статусу.',
+      'Сприяння інклюзивності у молодіжному середовищі.',
+      'Спільна робота задля захисту прав та інтересів молоді.'
+    ],
+    icon: Globe,
+    color: 'bg-indigo-500'
   }
 ];
 
-export const FOCUS_AREAS_EN: FocusArea[] = [
+export const PRINCIPLES_EN = [
   {
     id: 'participation',
-    title: 'Youth & Participation',
-    description: 'Engaging youth in decision-making processes and public life of the city.',
+    title: 'Participation',
+    description: 'We recognize the right of every young person to participate in the city\'s decision-making.',
+    theses: [
+      'Involvement in the implementation of personal plans and community initiatives.',
+      'Development of competencies and bilateral exchange of experience.',
+      'Participation of activists in the planning and life of KCYC.'
+    ],
     icon: Users,
     color: 'bg-kmmr-blue dark:bg-blue-400'
   },
   {
-    id: 'career',
-    title: 'Employment & Career',
-    description: 'Creating opportunities for employment, internships, and professional development.',
-    icon: Briefcase,
+    id: 'cooperation',
+    title: 'Cooperation',
+    description: 'We ensure interaction and cooperation between different groups to achieve common goals.',
+    theses: [
+      'Joining forces for the implementation of joint projects.',
+      'Partnership with all CSOs and youth initiatives.',
+      'Constant dialogue as the basis for the development of the youth movement.'
+    ],
+    icon: HeartHandshake,
     color: 'bg-kmmr-pink'
   },
   {
-    id: 'education',
-    title: 'Education & Development',
-    description: 'Non-formal education, trainings, and educational events for youth.',
-    icon: GraduationCap,
+    id: 'openness',
+    title: 'Openness',
+    description: 'We promote public engagement in dialogue and transparency in decision-making.',
+    theses: [
+      'Clarity of processes and free access to work results.',
+      'Public discussion, reaction to criticism, and accountability.',
+      'Building trust within the institution and with the public.'
+    ],
+    icon: Eye,
     color: 'bg-kmmr-green'
   },
   {
-    id: 'civil-society',
-    title: 'Civil Society',
-    description: 'Development of volunteering and support for youth initiatives.',
-    icon: HeartHandshake,
+    id: 'development',
+    title: 'Development',
+    description: 'We influence government decisions and implement innovations.',
+    theses: [
+      'Shaping new standards for city youth policy.',
+      'Implementation of innovations and support for youth initiatives.',
+      'Constant improvement of the team\'s professional skills.'
+    ],
+    icon: TrendingUp,
     color: 'bg-kmmr-orange'
+  },
+  {
+    id: 'diversity',
+    title: 'Diversity',
+    description: 'We consider the interests of young people from different social groups.',
+    theses: [
+      'Supporting youth needs regardless of social status.',
+      'Promoting inclusivity in the youth environment.',
+      'Working together to protect the rights and interests of youth.'
+    ],
+    icon: Globe,
+    color: 'bg-indigo-500'
   }
 ];
 
-export const FOCUS_AREAS = FOCUS_AREAS_UK;
 
 // --- DOCUMENTS ---
 export const DOCUMENTS_LIST_UK: DocumentItem[] = [
@@ -155,6 +223,105 @@ export const SDGS_EN: SDG[] = [
 ];
 
 export const SDGS = SDGS_UK;
+
+// --- CAPACITY ---
+export interface CapacityItem {
+  title: string;
+  description: string;
+  icon: any;
+  color: string;
+  cta: string;
+}
+
+export const CAPACITY_UK: CapacityItem[] = [
+  {
+    title: 'Відкрита комунікація',
+    description: 'Ми маємо соціальні мережі: Instagram, Facebook, LinkedIn, YouTube; Telegram-канал; цільову розсилку SendPulse. Відвідуваність заходів — від 30 осіб. Наш рекорд у Києві — 105 осіб на одному заході.',
+    icon: MessageSquare,
+    color: '#8BC442',
+    cta: 'Наші соцмережі'
+  },
+  {
+    title: 'База практики',
+    description: 'Ми маємо можливість залучати інтернів з різних університетів та різних спеціальностей. Все залежить від потреб університету або наших. З 2021 року у нас було 70 інтернів за спеціальностями: журналістика, PR та маркетинг.',
+    icon: GraduationCap,
+    color: '#031B47',
+    cta: 'Стати інтерном'
+  },
+  {
+    title: 'Зв’язки з громадськістю',
+    description: 'Ми маємо доступ до медіаканалів. Комунікуємо із зірками, акторами та відомими особистостями українського суспільства. Маємо налагоджену комунікацію з різними вечірками та рейвами Києва.',
+    icon: Megaphone,
+    color: '#D7269B',
+    cta: 'Співпраця'
+  },
+  {
+    title: 'Матеріально-технічне забезпечення',
+    description: 'Ми маємо: канцелярію, стабілізатор для відеозйомки, петличні мікрофони, штатив для камери, софтбокси. Ми можемо домовлятися та використовувати майно наших організацій-членів, так само як вони використовують наше.',
+    icon: Video,
+    color: '#FA8700',
+    cta: 'Запит на ресурси'
+  },
+  {
+    title: 'Експертна спільнота',
+    description: 'Представництва міжнародних рухів є частиною нашої спільноти. Серед вітчизняного ринку організацій ми маємо найстарішу НУО в країні — Українську Раду Миру, діяльність якої была відновлена головою нашої НУО.',
+    icon: ShieldCheck,
+    color: '#3F1B65',
+    cta: 'Долучитися'
+  },
+  {
+    title: 'Простір',
+    description: 'Ми маємо місце для проведення заходів, робочих зустрічей наших та наших організацій-членів, для постійної роботи у формі окремої кімнати або простору загалом, ми можемо бронювати простір, якщо він вільний. Це коворкінг iHUB.',
+    icon: Building,
+    color: '#6D351A',
+    cta: 'Забронювати'
+  }
+];
+
+export const CAPACITY_EN: CapacityItem[] = [
+  {
+    title: 'Open communication',
+    description: 'We have social media: Instagram, Facebook, LinkedIn, YouTube; Telegram channel; SendPulse targeted mailing list. Attendance at events is from 30 people. Our record in Kyiv is 105 people at one event.',
+    icon: MessageSquare,
+    color: '#8BC442',
+    cta: 'Our social media'
+  },
+  {
+    title: 'Practice base',
+    description: 'We are able to engage interns from different universities and different specialties. It all depends on the needs of the university or ours. Since 2021, we have had 70 interns with a degree in journalism, PR, and marketing.',
+    icon: GraduationCap,
+    color: '#031B47',
+    cta: 'Become an intern'
+  },
+  {
+    title: 'Public relations',
+    description: 'We have access to media channels. We communicate with stars, actors and famous personalities of Ukrainian society. We are in good communication with various parties and raves in Kyiv.',
+    icon: Megaphone,
+    color: '#D7269B',
+    cta: 'Collaboration'
+  },
+  {
+    title: 'Material and technical support',
+    description: 'We have: stationery, a stabiliser for video filming, microphone loops, a camera tripod, light boxes. We can negotiate and use the property of our member organisations as they use ours.',
+    icon: Video,
+    color: '#FA8700',
+    cta: 'Resource request'
+  },
+  {
+    title: 'Expert community',
+    description: 'Representations of international movements are part of our community. Among the domestic market of organisations, we have the oldest NGO in the country, the Ukrainian Peace Council, whose activities were resumed by the head of our NGO.',
+    icon: ShieldCheck,
+    color: '#3F1B65',
+    cta: 'Join us'
+  },
+  {
+    title: 'Space',
+    description: 'We have a place for events, working meetings of our and our member organisations, for permanent work in the form of a separate room or space in general, we can book space if it is free. This is the iHUB coworking space.',
+    icon: Building,
+    color: '#6D351A',
+    cta: 'Book space'
+  }
+];
 
 // --- DEPARTMENTS ---
 export const DEPARTMENTS_UK: Department[] = [
@@ -488,17 +655,17 @@ export const OPPORTUNITIES = OPPORTUNITIES_UK;
 
 // --- TIMELINE DATA ---
 export const TIMELINE_EVENTS_UK = [
-  { year: '2017', icon: Calendar, color: 'text-kmmr-blue dark:text-blue-400', bg: 'bg-kmmr-blue dark:bg-blue-400', title: 'Витоки та становлення', desc: '13 травня 2017 року відбулися установчі збори та обрання першого Правління, що стало фактичним народженням КММР як інституції. У 2017–2019 роках формувалися внутрішні зв’язки.' },
-  { year: '2019', icon: TrendingUp, color: 'text-kmmr-green', bg: 'bg-kmmr-green', title: 'Перезапуск і професіоналізація', desc: '20 серпня 2019 року відбулися позачергові Загальні збори. Це дало Раді новий імпульс розвитку, посилило довіру та професійність команди.' },
-  { year: '2022', icon: Shield, color: 'text-kmmr-orange', bg: 'bg-kmmr-orange', title: 'Розвиток під час війни', desc: 'Повномасштабне вторгнення тимчасово «заморозило» діяльність, але з осені 2022 року Рада відновила активну роботу. Оновлено візуальну айдентику.' },
+  { year: '2017', icon: Calendar, color: 'text-kmmr-blue dark:text-blue-400', bg: 'bg-kmmr-blue dark:bg-blue-400', title: 'Заснування', desc: '13 травня 2017 року відбулися установчі збори та обрання першого Правління, що стало фактичним народженням КММР як інституції. У 2017–2019 роках формувалися внутрішні зв’язки.' },
+  { year: '2019', icon: TrendingUp, color: 'text-kmmr-green', bg: 'bg-kmmr-green', title: 'Формування', desc: '20 серпня 2019 року відбулися позачергові Загальні збори. Це дало Раді новий імпульс розвитку, посилило довіру та професійність команди.' },
+  { year: '2022', icon: Shield, color: 'text-kmmr-orange', bg: 'bg-kmmr-orange', title: 'Відновлення та самовдосконалення', desc: 'Повномасштабне вторгнення тимчасово «заморозило» діяльність, але з осені 2022 року Рада відновила активну роботу. Оновлено візуальну айдентику.' },
   { year: 'Сьогодні', icon: Briefcase, color: 'text-kmmr-pink', bg: 'bg-kmmr-pink', title: 'Можливості та результати', desc: 'Рада активно працює через соцмережі та офлайн-простори. Серед партнерів: департаменти КМДА, Київський молодіжний центр, НБУ, Deutsches Haus Kyiv та понад 20 інших.' },
   { year: 'Плани', icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-500', title: 'Виклики та Стратегія', desc: 'Ми працюємо над подоланням основних викликів. Стратегічні цілі: адвокація змін до законодавства, консолідація молоді Києва та залучення донорської підтримки.' },
 ];
 
 export const TIMELINE_EVENTS_EN = [
-  { year: '2017', icon: Calendar, color: 'text-kmmr-blue dark:text-blue-400', bg: 'bg-kmmr-blue dark:bg-blue-400', title: 'Origins and Formation', desc: 'On May 13, 2017, the constituent assembly and election of the first Board took place, marking the birth of KCYC. In 2017–2019, internal connections were formed.' },
-  { year: '2019', icon: TrendingUp, color: 'text-kmmr-green', bg: 'bg-kmmr-green', title: 'Relaunch and Professionalization', desc: 'On August 20, 2019, an extraordinary General Assembly took place. This gave the Council a new impulse for development and strengthened trust.' },
-  { year: '2022', icon: Shield, color: 'text-kmmr-orange', bg: 'bg-kmmr-orange', title: 'Development during War', desc: 'The full-scale invasion temporarily paused activities, but since autumn 2022, the Council resumed active work. Visual identity was updated.' },
+  { year: '2017', icon: Calendar, color: 'text-kmmr-blue dark:text-blue-400', bg: 'bg-kmmr-blue dark:bg-blue-400', title: 'Foundation', desc: 'On May 13, 2017, the constituent assembly and election of the first Board took place, marking the birth of KCYC. In 2017–2019, internal connections were formed.' },
+  { year: '2019', icon: TrendingUp, color: 'text-kmmr-green', bg: 'bg-kmmr-green', title: 'Formation', desc: 'On August 20, 2019, an extraordinary General Assembly took place. This gave the Council a new impulse for development and strengthened trust.' },
+  { year: '2022', icon: Shield, color: 'text-kmmr-orange', bg: 'bg-kmmr-orange', title: 'Recovery and Self-Improvement', desc: 'The full-scale invasion temporarily paused activities, but since autumn 2022, the Council resumed active work. Visual identity was updated.' },
   { year: 'Today', icon: Briefcase, color: 'text-kmmr-pink', bg: 'bg-kmmr-pink', title: 'Opportunities and Results', desc: 'The Council works actively through social networks and offline spaces. Partners include: KSCA departments, Kyiv Youth Center, NBU, Deutsches Haus Kyiv.' },
   { year: 'Plans', icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-500', title: 'Challenges and Strategy', desc: 'We are working to overcome major challenges. Strategic goals: advocacy for legislative changes and attracting donor support.' },
 ];

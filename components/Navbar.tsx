@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, Globe, Moon, Sun } from 'lucide-react';
 import { NAV_LINKS_UK, NAV_LINKS_EN } from '../constants';
 import { Logo } from './Logo';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { scrollToSection } from '../lib/scroll';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
 
@@ -20,7 +22,11 @@ export const Navbar: React.FC = () => {
 
   const handleJoinClick = () => {
     setIsOpen(false);
-    navigate('/contacts');
+    if (location.pathname === '/') {
+      scrollToSection('contacts');
+    } else {
+      navigate('/contacts');
+    }
   };
 
   const toggleLanguage = () => {
@@ -74,7 +80,7 @@ export const Navbar: React.FC = () => {
               </button>
 
               <button
-                onClick={() => navigate('/contacts')}
+                onClick={handleJoinClick}
                 className="bg-kmmr-pink text-white px-6 py-2.5 rounded-full font-bold uppercase text-xs tracking-wider hover:bg-opacity-90 transition-all transform hover:scale-105 shadow-lg shadow-kmmr-pink/30"
               >
                 {t('nav.join')}

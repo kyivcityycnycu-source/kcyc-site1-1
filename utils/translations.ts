@@ -10,7 +10,7 @@ export const translations = {
       titleStart: 'Змінюй',
       titleMid: 'Себе',
       titleEnd: 'Світ',
-      subtitle: 'Ми - Найбільше волонтерське молодіжне обʼєднання Києва. Платформа для твого розвитку, реалізації ідей та впливу на життя столиці. Ставай частиною змін вже сьогодні',
+      subtitle: 'Ми - Найбільше волонтерське молодіжне обʼєднання Києва. Платформа для консолідованої взаємодії учасників молодіжної політики міста Київ, з метою спільної роботи над розвитком молодіжної сфери та формування активної всебічно розвиненої молодої особистості',
       btnJoin: 'Приєднатися',
       btnProjects: 'Наші проєкти',
       btnSupport: 'Підтримка ініціатив'
@@ -32,11 +32,12 @@ export const translations = {
       initiatives: 'Ініціатив підтримано'
     },
     values: {
-      title: 'Більше ніж організація. Це спільнота.',
-      desc: 'КММР — це місце, де твій голос має значення. Ми не просто обговорюємо проблеми, ми створюємо рішення разом з міською владою, бізнесом та міжнародними партнерами.',
-      list1: 'Адвокація прав молоді в Києві',
-      list2: 'Нетворкінг з лідерами думок',
-      list3: 'Доступ до міжнародних програм',
+      title: 'КММР - як інституція та спільнота',
+      desc: 'Київська Міська Молодіжна Рада - коаліція громадського суспільства, найбільше молодіжне об’єднання столиці, частина Національної Молодіжної Ради України від 13 травня 2017 року.',
+      subtitle: 'Напрями стратегії, складаються з пунктів, визначають стан та роботу інституції крізь роки',
+      list1: 'Інституційна спроможність',
+      list2: 'Людський капітал',
+      list3: 'Міжнародне співробітництво',
       card1Title: 'Волонтерство',
       card1Desc: 'Долучайся до соціальних ініціатив та допомагай тим, хто цього потребує найбільше.',
       card2Title: 'Міжнародна співпраця',
@@ -45,9 +46,9 @@ export const translations = {
       card3Desc: 'Розвивай свої Soft Skills та ставай лідером змін у своїй громаді.'
     },
     focus: {
-      tag: 'Чим ми займаємось',
-      title: 'Напрями Діяльності',
-      desc: 'Ми фокусуємось на ключових аспектах розвитку молоді та міста.'
+      tag: 'Принципи діяльності',
+      title: 'Принципи діяльності',
+      desc: 'Ми керуємося цими принципами у кожному нашому проєкті та ініціативі.'
     },
     contacts: {
       title: 'Приєднуйся до команди КММР',
@@ -102,6 +103,45 @@ export const translations = {
       successTitle: 'Запит отримано!',
       successDesc: 'Ми розглянемо вашу ініціативу та зв\'яжемося для обговорення деталей співпраці.'
     },
+    joinUs: {
+      title: 'Як долучитись',
+      igs: {
+        title: 'ІГС',
+        subtitle: 'Хотіти бути частиною спільноти',
+        memoSelfGov: 'Для Самоврядувань підписати Меморандум',
+        orgChronology: 'Для Організацій слідкувати за хронологією подій нижче',
+        memoLink: 'Меморандум'
+      },
+      partner: {
+        title: 'ПАРТНЕРУ',
+        subtitle: 'Хотіти допомогти або надати підтримку спільноті',
+        memoRead: 'Ознайомитись з Меморандумом/надати свій',
+        emailContact: 'Заявити, чим ми можемо бути один одному корисні на пошту',
+        memoLink: 'Меморандумом'
+      },
+      volunteer: {
+        title: 'ВОЛОНТЕРУ',
+        subtitle: 'Хотіти набувати досвід та працювати',
+        fillForm: 'Заповнити форму',
+        readProposal: 'Ознайомитись з можливостями',
+        formLink: 'форму',
+        proposalLink: 'можливостями'
+      },
+      chronology: {
+        title: 'Хронологія вступу для організацій',
+        step1: 'СТАРТ',
+        step1Desc: 'Рішення керівного органу Організації про вступ до КММР',
+        step2: 'ПІДГОТОВКА',
+        step2Desc: 'Підготовуємо усі затребувані документи за посиланням',
+        step3: 'ПОДАЧА',
+        step3Desc: 'Подаємо усі затребувані документи та інформацію за посиланням',
+        step4: 'РІШЕННЯ',
+        step4Desc: 'Винесення питання на голосування Радою КММР про вступ нової Організації',
+        step5: 'РАДІСТЬ',
+        step5Desc: 'Інформування Організацію про ухвалене рішення щодо вступу до КММР',
+        linkText: 'посиланням'
+      }
+    },
     footer: {
       subscribe: 'Підписатися',
       inputPlaceholder: 'Твій Email',
@@ -150,6 +190,10 @@ export const translations = {
       sdg: {
         tag: 'Глобальні Цілі',
         title: 'Ми підтримуємо Цілі Сталого Розвитку'
+      },
+      capacity: {
+        tag: 'Наші ресурси',
+        title: 'Спроможність'
       },
       partners: {
         title: 'Наші Партнери та Друзі',
@@ -222,7 +266,7 @@ export const translations = {
       titleStart: 'Change',
       titleMid: 'Yourself',
       titleEnd: 'World',
-      subtitle: 'We are the largest volunteer youth association in Kyiv. A platform for your development, realization of ideas, and influence on the life of the capital. Become a part of the changes today.',
+      subtitle: 'We are the largest volunteer youth association in Kyiv. A platform for consolidated interaction of youth policy participants in the city of Kyiv, with the aim of joint work on the development of the youth sphere and the formation of an active, comprehensively developed young personality.',
       btnJoin: 'Join Us',
       btnProjects: 'Our Projects',
       btnSupport: 'Support Initiatives'
@@ -244,11 +288,12 @@ export const translations = {
       initiatives: 'Initiatives Supported'
     },
     values: {
-      title: 'More than an organization. A community.',
-      desc: 'KCYC is a place where your voice matters. We don\'t just discuss problems, we create solutions together with city authorities, businesses, and international partners.',
-      list1: 'Advocacy of youth rights in Kyiv',
-      list2: 'Networking with opinion leaders',
-      list3: 'Access to international programs',
+      title: 'KMMR - as an institution and a community',
+      desc: 'Kyiv City Youth Council - a coalition of civil society, the largest youth association of the capital, part of the National Youth Council of Ukraine since May 13, 2017.',
+      subtitle: 'Strategic directions, consisting of points, define the state and work of the institution through the years',
+      list1: 'Institutional capacity',
+      list2: 'Human capital',
+      list3: 'International cooperation',
       card1Title: 'Volunteering',
       card1Desc: 'Join social initiatives and help those who need it most.',
       card2Title: 'International Cooperation',
@@ -257,12 +302,12 @@ export const translations = {
       card3Desc: 'Develop your Soft Skills and become a changemaker in your community.'
     },
     focus: {
-      tag: 'What We Do',
-      title: 'Focus Areas',
-      desc: 'We focus on key aspects of youth and city development.'
+      tag: 'Principles of Activity',
+      title: 'Principles of Activity',
+      desc: 'We are guided by these principles in every project and initiative.'
     },
     contacts: {
-      title: 'Join the KCYC Team',
+      title: 'Join the KMMR Team',
       subtitle: 'Fill out the form to become a volunteer and change Kyiv with us.',
       successTitle: 'Application Sent!',
       successDesc: 'Thank you for your initiative. Our HR department has received your data and will contact you shortly.',
@@ -278,7 +323,7 @@ export const translations = {
       placeholders: {
         name: 'John Doe',
         dept: 'Choose direction...',
-        motivation: 'Why do you want to join KCYC?'
+        motivation: 'Why do you want to join KMMR?'
       },
       submit: 'Send Application',
       consent: 'By clicking "Submit", you agree to the processing of personal data.',
@@ -287,7 +332,7 @@ export const translations = {
     },
     support: {
       title: 'Support for Public Initiatives',
-      subtitle: 'Have a great idea or project? Fill out the form, and KCYC will help with implementation, resources, or informational support.',
+      subtitle: 'Have a great idea or project? Fill out the form, and KMMR will help with implementation, resources, or informational support.',
       labels: {
         orgName: 'Organization Name / Initiative Group',
         repName: 'Representative Name',
@@ -313,6 +358,45 @@ export const translations = {
       },
       successTitle: 'Request Received!',
       successDesc: 'We will review your initiative and contact you to discuss cooperation details.'
+    },
+    joinUs: {
+      title: 'How to Join',
+      igs: {
+        title: 'CSI',
+        subtitle: 'Want to be part of the community',
+        memoSelfGov: 'For Self-governments sign the Memorandum',
+        orgChronology: 'For Organizations follow the chronology of events below',
+        memoLink: 'Memorandum'
+      },
+      partner: {
+        title: 'PARTNER',
+        subtitle: 'Want to help or provide support to the community',
+        memoRead: 'Read the Memorandum/provide your own',
+        emailContact: 'State how we can be useful to each other via email',
+        memoLink: 'Memorandum'
+      },
+      volunteer: {
+        title: 'VOLUNTEER',
+        subtitle: 'Want to gain experience and work',
+        fillForm: 'Fill out the form',
+        readProposal: 'Read about opportunities',
+        formLink: 'form',
+        proposalLink: 'opportunities'
+      },
+      chronology: {
+        title: 'Chronology of admission for organizations',
+        step1: 'START',
+        step1Desc: 'Decision of the governing body of the Organization to join KMMR',
+        step2: 'PREPARATION',
+        step2Desc: 'Preparing all requested documents at the link',
+        step3: 'SUBMISSION',
+        step3Desc: 'Submitting all requested documents and information at the link',
+        step4: 'DECISION',
+        step4Desc: 'Submitting the issue for voting by the KMMR Council on the admission of a new Organization',
+        step5: 'JOY',
+        step5Desc: 'Informing the Organization about the decision regarding admission to KMMR',
+        linkText: 'link'
+      }
     },
     footer: {
       subscribe: 'Subscribe',
@@ -362,6 +446,10 @@ export const translations = {
       sdg: {
         tag: 'Global Goals',
         title: 'We Support Sustainable Development Goals'
+      },
+      capacity: {
+        tag: 'Our resources',
+        title: 'Capacity'
       },
       partners: {
         title: 'Our Partners and Friends',
