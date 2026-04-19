@@ -5,13 +5,13 @@ import { getStorage } from "firebase/storage";
 
 // Ваші реальні дані з консолі Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyA5kP-GtujwXoEtT5oqXwAsPSV7DOKuHgI",
-  authDomain: "kcyc-site.firebaseapp.com",
-  projectId: "kcyc-site",
-  storageBucket: "kcyc-site.firebasestorage.app",
-  messagingSenderId: "290863961590",
-  appId: "1:290863961590:web:cea1942d8d03bc84e263d7",
-  measurementId: "G-0Q3R03CYK3"
+  apiKey: "AIzaSyBj0ID56YOMTEhvcTD1tdieDqSqjwqfw1w",
+  authDomain: "kcyc-site-b9544.firebaseapp.com",
+  projectId: "kcyc-site-b9544",
+  storageBucket: "kcyc-site-b9544.firebasestorage.app",
+  messagingSenderId: "146472099125",
+  appId: "1:146472099125:web:d29ca8e5975595b642407c",
+  measurementId: "G-TSR4D10YFY"
 };
 
 // Initialize Firebase
