@@ -1425,9 +1425,9 @@ export const AdminDashboard: React.FC = () => {
 
     const csv = convertToCSV(formattedData);
 
-    const fileName = selectedEventFilter !== 'all' 
+    const fileName = selectedDynamicFilter !== 'all' 
 
-      ? `Export_${selectedEventFilter.substring(0, 20)}_${new Date().toISOString().split('T')[0]}.csv`
+      ? `Export_${selectedDynamicFilter.substring(0, 20)}_${new Date().toISOString().split('T')[0]}.csv`
 
       : `Export_All_${new Date().toISOString().split('T')[0]}.csv`;
 
@@ -2072,7 +2072,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Sidebar */}
 
-      <aside className={`w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col fixed h-full z-30 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+      <aside className={`w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col fixed h-full z-30 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
 
         <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
 
@@ -2084,7 +2084,7 @@ export const AdminDashboard: React.FC = () => {
 
           </div>
 
-          <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+          <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
 
             <X size={24} />
 
@@ -2190,13 +2190,13 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Main Content */}
 
-      <main className="flex-grow md:ml-64 p-4 md:p-8 transition-all duration-300">
+      <main className="flex-grow lg:ml-64 p-4 md:p-8 transition-all duration-300 overflow-x-hidden">
 
         
 
         {/* Mobile Header Toggle */}
 
-        <div className="md:hidden mb-6 flex items-center justify-between">
+        <div className="lg:hidden mb-6 flex items-center justify-between">
 
            <div className="flex items-center gap-4">
 
@@ -2224,7 +2224,7 @@ export const AdminDashboard: React.FC = () => {
 
         {/* Header Desktop */}
 
-        <div className="hidden md:flex justify-between items-center mb-8">
+        <div className="hidden lg:flex justify-between items-center mb-8">
 
           <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
 
@@ -3058,30 +3058,20 @@ export const AdminDashboard: React.FC = () => {
               <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg border border-kmmr-pink/20 dark:border-kmmr-pink/10 mb-6 animate-fade-in-up">
 
                  <div className="flex justify-between items-start mb-6">
-
                    <h3 className="font-bold text-xl text-kmmr-blue dark:text-blue-400">Додати/Редагувати Проєкт</h3>
-
                    <button onClick={() => { setIsAddingProject(false); setNewProject({}); setFileToUpload(null); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"><XCircle size={24}/></button>
-
                 </div>
 
                 <form onSubmit={handleAddProject} className="space-y-6">
-
-                    <div className="flex items-center gap-4 border-b border-gray-100 dark:border-gray-800 pb-2">
-
-                     <span className="text-sm font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1"><Languages size={16}/> Мова контенту:</span>
-
-                     <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
-
+                    <div className="flex items-center gap-4 border-b border-gray-100 dark:border-gray-800 pb-2 overflow-x-auto">
+                     <span className="text-sm font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1 whitespace-nowrap"><Languages size={16}/> Мова контенту:</span>
+                     <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg shrink-0">
                         <button type="button" onClick={() => setProjectLang('uk')} className={`px-3 py-1 rounded-md text-sm font-bold transition-all ${projectLang === 'uk' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>UA</button>
-
                         <button type="button" onClick={() => setProjectLang('en')} className={`px-3 py-1 rounded-md text-sm font-bold transition-all ${projectLang === 'en' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>EN</button>
-
                      </div>
-
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                      <div className="space-y-4">
 
@@ -4043,7 +4033,7 @@ export const AdminDashboard: React.FC = () => {
 
                               </div>
 
-                              <div className="grid grid-cols-2 gap-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                                 <div>
 

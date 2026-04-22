@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { SDGS_UK, SDGS_EN, PARTNER_GROUPS_UK, PARTNER_GROUPS_EN, TIMELINE_EVENTS_UK, TIMELINE_EVENTS_EN, CAPACITY_UK, CAPACITY_EN } from '../constants';
-import { Target, Flag, Users, HeartHandshake, X, Facebook, Instagram, Linkedin, Send, Youtube } from 'lucide-react';
+import { GraduationCap, Megaphone, HeartHandshake, X, Facebook, Instagram, Linkedin, Send, Youtube } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { onSnapshot, collection } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { PartnerItem, PartnerType } from '../types';
 import { InternshipModal } from './InternshipModal';
+import { SocialModal } from './SocialModal';
 
 export const AboutSection: React.FC = () => {
   const { language, t } = useLanguage();
@@ -71,9 +73,9 @@ export const AboutSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
-            { icon: Users, title: t('about.stats.community'), text: t('about.stats.communityDesc'), color: 'bg-kmmr-blue' },
-            { icon: Target, title: t('about.stats.impact'), text: t('about.stats.impactDesc'), color: 'bg-kmmr-green' },
-            { icon: Flag, title: t('about.stats.action'), text: t('about.stats.actionDesc'), color: 'bg-kmmr-pink' }
+            { icon: GraduationCap, title: t('about.stats.community'), text: t('about.stats.communityDesc'), color: 'bg-kmmr-blue' },
+            { icon: HeartHandshake, title: t('about.stats.impact'), text: t('about.stats.impactDesc'), color: 'bg-kmmr-green' },
+            { icon: Megaphone, title: t('about.stats.action'), text: t('about.stats.actionDesc'), color: 'bg-kmmr-pink' }
           ].map((item, idx) => (
             <div key={idx} className={`${item.color} rounded-2xl p-8 text-white transform hover:-translate-y-2 transition-transform duration-300 shadow-xl`}>
               <item.icon className="w-12 h-12 mb-6 opacity-80" />
@@ -190,7 +192,9 @@ export const AboutSection: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="text-kmmr-pink font-bold uppercase tracking-widest text-sm mb-2 block">{t('about.capacity.tag')}</span>
-            <h2 className="text-3xl font-black text-kmmr-blue dark:text-white mb-4 uppercase tracking-tight">{t('about.capacity.title')}</h2>
+            <h2 className="text-3xl font-black text-kmmr-blue dark:text-white mb-4 uppercase tracking-tight">
+              {language === 'uk' ? 'Спроможність' : 'Capacity'}
+            </h2>
             <div className="w-24 h-1 bg-kmmr-pink mx-auto rounded-full"></div>
           </div>
 
@@ -375,66 +379,11 @@ export const AboutSection: React.FC = () => {
       </div>
 
       {/* Social Media Modal */}
-      <AnimatePresence>
-        {isSocialModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white dark:bg-gray-900 rounded-[2.5rem] w-full max-w-lg overflow-hidden shadow-2xl relative"
-            >
-              <button 
-                onClick={() => setIsSocialModalOpen(false)}
-                className="absolute top-6 right-6 p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-kmmr-pink transition-colors z-10"
-              >
-                <X size={24} />
-              </button>
-
-              <div className="p-10">
-                <div className="text-center mb-8">
-                  <div className="w-20 h-20 bg-kmmr-green/10 rounded-3xl flex items-center justify-center mx-auto mb-4">
-                    <Users className="text-kmmr-green w-10 h-10" />
-                  </div>
-                  <h3 className="text-3xl font-black text-kmmr-blue dark:text-white uppercase tracking-tight">
-                    {language === 'uk' ? 'Наші соцмережі' : 'Our Social Media'}
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400 mt-2 font-medium">
-                    {language === 'uk' ? 'Будь в курсі всіх новин та подій' : 'Stay updated with all news and events'}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { icon: Instagram, name: 'Instagram', url: 'https://www.instagram.com/kyiv.city.yc.nycu/', color: 'hover:bg-pink-500' },
-                    { icon: Facebook, name: 'Facebook', url: 'https://www.facebook.com/kyiv.city.yc.nycu/', color: 'hover:bg-blue-600' },
-                    { icon: Send, name: 'Telegram', url: 'https://t.me/Kyiv_City_Youth_Council', color: 'hover:bg-blue-400' },
-                    { icon: Linkedin, name: 'LinkedIn', url: 'https://www.linkedin.com/company/kyiv-city-youth-council?originalSubdomain=ua', color: 'hover:bg-blue-700' },
-                    { icon: Youtube, name: 'YouTube', url: 'https://www.youtube.com/@kyiv_city_youth_council', color: 'hover:bg-red-600' }
-                  ].map((social, i) => (
-                    <a 
-                      key={i}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`flex flex-col items-center justify-center p-6 rounded-3xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 transition-all duration-300 group ${social.color} hover:text-white hover:border-transparent hover:-translate-y-1 ${i === 0 ? 'col-span-2' : ''}`}
-                    >
-                      <social.icon size={32} className="mb-3 transition-transform group-hover:scale-110" />
-                      <span className="font-bold text-sm uppercase tracking-wider">{social.name}</span>
-                    </a>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-gray-50 dark:bg-gray-800/80 p-6 text-center border-t border-gray-100 dark:border-gray-700">
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                  {language === 'uk' ? 'Долучайся до нашої спільноти!' : 'Join our community!'}
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <SocialModal 
+        isOpen={isSocialModalOpen} 
+        onClose={() => setIsSocialModalOpen(false)} 
+        language={language}
+      />
 
       {/* Internship Registration Modal */}
       <AnimatePresence>

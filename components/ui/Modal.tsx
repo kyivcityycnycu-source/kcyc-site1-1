@@ -6,10 +6,25 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl' | 'full';
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, size = '2xl' }) => {
   const modalRef = useRef<HTMLDivElement>(null);
+
+  const sizeClasses = {
+    sm: 'max-w-sm',
+    md: 'max-w-md',
+    lg: 'max-w-lg',
+    xl: 'max-w-xl',
+    '2xl': 'max-w-2xl',
+    '3xl': 'max-w-3xl',
+    '4xl': 'max-w-4xl',
+    '5xl': 'max-w-5xl',
+    '6xl': 'max-w-6xl',
+    '7xl': 'max-w-7xl',
+    full: 'max-w-[95vw]'
+  };
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -41,7 +56,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
       <div 
         ref={modalRef}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl h-auto max-h-[90vh] relative animate-fade-in-up transition-colors duration-300 flex flex-col overflow-hidden border border-white/10 dark:border-gray-700 z-[10000]"
+        className={`bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full ${sizeClasses[size]} h-auto max-h-[90vh] relative animate-fade-in-up transition-colors duration-300 flex flex-col overflow-hidden border border-white/10 dark:border-gray-700 z-[10000]`}
         onClick={(e) => e.stopPropagation()}
       >
         <button

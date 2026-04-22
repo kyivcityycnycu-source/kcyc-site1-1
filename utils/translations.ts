@@ -170,12 +170,12 @@ export const translations = {
     },
     about: {
       stats: {
-        community: 'Спільнота',
-        communityDesc: 'Близько 50 активних волонтерів',
-        impact: 'Вплив',
-        impactDesc: 'Участь у формуванні молодіжної політики',
-        action: 'Дія',
-        actionDesc: 'Реалізація соціальних проєктів'
+        community: 'Досвід',
+        communityDesc: 'Безцінний досвід який ти можеш отримати тут, в подальшому гарно відгукнутися в твоєму резюме',
+        impact: 'Підтримка',
+        impactDesc: 'Інституція сприяє прагненню кожної молодої до розвитку та надає листи підтримки та рекомендації',
+        action: 'Адвокація',
+        actionDesc: 'Захищаємо права молоді на всіх рівнях'
       },
       who: {
         tag: 'Хто ми є',
@@ -426,12 +426,12 @@ export const translations = {
     },
     about: {
       stats: {
-        community: 'Community',
-        communityDesc: 'About 50 active volunteers',
-        impact: 'Impact',
-        impactDesc: 'Participation in youth policy making',
-        action: 'Action',
-        actionDesc: 'Implementation of social projects'
+        community: 'Experience',
+        communityDesc: 'Invaluable experience that you can get here, which will echo well in your resume in the future',
+        impact: 'Support',
+        impactDesc: 'The institution fosters the aspiration of every young person for development and provides letters of support and recommendations',
+        action: 'Advocacy',
+        actionDesc: 'Protecting the rights of youth at all levels',
       },
       who: {
         tag: 'Who We Are',

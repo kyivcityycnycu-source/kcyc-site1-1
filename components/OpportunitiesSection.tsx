@@ -59,7 +59,8 @@ export const OpportunitiesSection: React.FC<OpportunitiesSectionProps> = ({ only
       link: '',
       image: p.image,
       hasRegistration: p.hasRegistration,
-      googleFormLink: p.googleFormLink
+      googleFormLink: p.googleFormLink,
+      questions: p.questions
     };
   };
 

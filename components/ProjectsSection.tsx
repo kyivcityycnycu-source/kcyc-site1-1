@@ -151,7 +151,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
   if (onlyModal) {
     return (
       <>
-        <Modal isOpen={!!selectedProject} onClose={handleCloseModal}>
+        <Modal isOpen={!!selectedProject} onClose={handleCloseModal} size="4xl">
           {selectedProject && (
             <div className="flex flex-col bg-white dark:bg-gray-800 transition-colors">
               <div className="h-64 w-full relative">
@@ -331,7 +331,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
       </div>
 
       {/* Project Detail Modal */}
-      <Modal isOpen={!!selectedProject} onClose={handleCloseModal}>
+      <Modal isOpen={!!selectedProject} onClose={handleCloseModal} size="4xl">
         {selectedProject && (
           <div className="flex flex-col bg-white dark:bg-gray-800 transition-colors">
             <div className="h-64 w-full relative">

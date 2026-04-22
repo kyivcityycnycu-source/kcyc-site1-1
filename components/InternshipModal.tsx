@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Send, GraduationCap, User, Mail, Phone, Building2, BookOpen, MessageSquare, CheckCircle, Instagram } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
@@ -12,6 +13,22 @@ interface InternshipModalProps {
 
 export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClose }) => {
   const { language } = useLanguage();
+
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [isOpen]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState({
@@ -61,14 +78,14 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  return (
-    <div className="fixed inset-0 z-[110] overflow-y-auto bg-black/70 backdrop-blur-md overscroll-behavior-y-contain">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/70 backdrop-blur-md overscroll-behavior-y-contain">
       <div className="flex min-h-full items-start sm:items-center justify-center p-4 sm:p-6 md:p-8">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="bg-white dark:bg-gray-900 rounded-[2.5rem] w-full max-w-6xl overflow-hidden shadow-2xl relative my-8"
+          className="bg-white dark:bg-gray-900 rounded-[2.5rem] w-full max-w-5xl overflow-hidden shadow-2xl relative my-8"
         >
           <button 
             onClick={onClose}
@@ -77,16 +94,16 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
             <X size={24} />
           </button>
 
-          <div className="p-8 md:p-12 pb-6 md:pb-8">
+          <div className="p-8 md:p-10 pb-4 md:pb-5">
             <div className="text-center mb-10">
               <div className="w-20 h-20 bg-kmmr-blue/10 dark:bg-blue-500/30 rounded-3xl flex items-center justify-center mx-auto mb-4">
                 <GraduationCap className="text-kmmr-blue dark:text-blue-400 w-10 h-10" />
               </div>
               <h3 className="text-3xl font-black text-kmmr-blue dark:text-white uppercase tracking-tight">
-                {language === 'uk' ? 'Реєстрація на практику' : 'Internship Registration'}
+                {language === 'uk' ? 'База практики' : 'Internship Base'}
               </h3>
               <p className="text-gray-500 dark:text-gray-400 mt-2 font-medium">
-                {language === 'uk' ? 'Заповніть анкету, щоб долучитися до нашої команди' : 'Fill out the form to join our team'}
+                {language === 'uk' ? 'Долучайтеся до нашої команди як інтерн' : 'Join our team as an intern'}
               </p>
             </div>
 
@@ -257,7 +274,7 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
                   )}
                 </button>
 
-                <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500 text-center mt-6 md:mt-8 px-4 leading-relaxed font-medium">
+                <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500 text-center mt-4 px-4 leading-relaxed font-medium">
                   {language === 'uk' 
                     ? 'Натискаючи кнопку "Відправити заявку", ви даєте згоду на обробку персональних даних.' 
                     : 'By clicking "Submit Application", you consent to the processing of personal data.'}
@@ -274,6 +291,6 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
         </div>
       </motion.div>
     </div>
-  </div>
-  );
+  </div>,
+  document.body);
 };
