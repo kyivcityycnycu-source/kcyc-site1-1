@@ -10,7 +10,7 @@ export const translations = {
       titleStart: 'Змінюй',
       titleMid: 'Себе',
       titleEnd: 'Світ',
-      subtitle: 'Ми - Найбільше волонтерське молодіжне обʼєднання Києва. Платформа для консолідованої взаємодії учасників молодіжної політики міста Київ, з метою спільної роботи над розвитком молодіжної сфери та формування активної всебічно розвиненої молодої особистості',
+      subtitle: 'Ми - Найбільше молодіжне обʼєднання Києва. Платформа для консолідованої взаємодії учасників молодіжної політики міста Київ, з метою спільної роботи над розвитком молодіжної сфери та формування активної всебічно розвиненої молодої особистості',
       btnJoin: 'Приєднатися',
       btnProjects: 'Наші проєкти',
       btnSupport: 'Підтримка ініціатив'
@@ -38,8 +38,8 @@ export const translations = {
       list1: 'Інституційна спроможність',
       list2: 'Людський капітал',
       list3: 'Міжнародне співробітництво',
-      card1Title: 'Волонтерство',
-      card1Desc: 'Долучайся до соціальних ініціатив та допомагай тим, хто цього потребує найбільше.',
+      card1Title: 'Громадська діяльність',
+      card1Desc: 'Долучайся до соціальних ініціатив та змінюй місто разом з нами.',
       card2Title: 'Міжнародна співпраця',
       card2Desc: 'Подорожуй, навчайся та обмінюйся досвідом з молоддю з усього світу.',
       card3Title: 'Лідерство',
@@ -52,7 +52,7 @@ export const translations = {
     },
     contacts: {
       title: 'Приєднуйся до команди КММР',
-      subtitle: 'Заповни форму, щоб стати волонтером та змінювати Київ разом з нами.',
+      subtitle: 'Заповни форму, щоб долучитися до команди та змінювати Київ разом з нами.',
       successTitle: 'Заявку відправлено!',
       successDesc: "Дякуємо за твою ініціативу. Наш HR-відділ отримав твої дані і зв'яжеться з тобою найближчим часом.",
       retryBtn: 'Відправити ще одну заявку',
@@ -96,7 +96,7 @@ export const translations = {
         info: 'Інформаційна підтримка (репости, анонси)',
         resource: 'Ресурсна підтримка (приміщення, техніка)',
         partnership: 'Партнерство / Співорганізація',
-        volunteers: 'Залучення волонтерів',
+        volunteers: 'Залучення молоді',
         mentor: 'Експертна / Менторська допомога',
         other: 'Інше'
       },
@@ -120,7 +120,7 @@ export const translations = {
         memoLink: 'Меморандумом'
       },
       volunteer: {
-        title: 'ВОЛОНТЕРУ',
+        title: 'УЧАСНИКУ',
         subtitle: 'Хотіти набувати досвід та працювати',
         fillForm: 'Заповнити форму',
         readProposal: 'Ознайомитись з можливостями',
@@ -149,7 +149,7 @@ export const translations = {
       news: 'Новини',
       newsDesc: 'Будь в курсі найсвіжіших можливостей.',
       follow: 'Слідкуй',
-      desc: 'Найбільше волонтерське молодіжне обʼєднання Києва. Відокремлений підрозділ Національної Молодіжної Ради України.',
+      desc: 'Найбільше молодіжне обʼєднання Києва. Відокремлений підрозділ Національної Молодіжної Ради України.',
       rights: 'Всі права захищені.',
       memberOf: 'Частина Національної Молодіжної Ради України'
     },
@@ -180,7 +180,7 @@ export const translations = {
       who: {
         tag: 'Хто ми є',
         title: 'Київська Міська Молодіжна Рада',
-        p1: 'Київська міська молодіжна рада (КММР) – це самоврядна молодіжна інституція міського рівня, що працює на волонтерських засадах.',
+        p1: 'Київська міська молодіжна рада (КММР) – це самоврядна молодіжна інституція міського рівня, що працює на громадських засадах.',
         p2: 'Ми залучаємо молодь до формування політики в Києві та виступаємо стабільним голосом молодих людей у місті.',
         p3: 'Наша місія — створити умови, де кожен молодий киянин може реалізувати свій потенціал. КММР відома в місті платформою, до якої прагнуть долучатися молоді люди, а також базою практики для студентів – з 2021 року тут пройшли стажування близько 70 інтернів.'
       },
@@ -222,7 +222,7 @@ export const translations = {
       tag: 'Розвиток',
       title: 'Актуальні можливості',
       types: {
-        volunteering: 'Волонтерство',
+        volunteering: 'Проєкти',
         education: 'Навчання',
         event: 'Подія',
         job: 'Робота'
@@ -266,7 +266,7 @@ export const translations = {
       titleStart: 'Change',
       titleMid: 'Yourself',
       titleEnd: 'World',
-      subtitle: 'We are the largest volunteer youth association in Kyiv. A platform for consolidated interaction of youth policy participants in the city of Kyiv, with the aim of joint work on the development of the youth sphere and the formation of an active, comprehensively developed young personality.',
+      subtitle: 'We are the largest youth association in Kyiv. A platform for consolidated interaction of youth policy participants in the city of Kyiv, with the aim of joint work on the development of the youth sphere and the formation of an active, comprehensively developed young personality.',
       btnJoin: 'Join Us',
       btnProjects: 'Our Projects',
       btnSupport: 'Support Initiatives'
@@ -294,8 +294,8 @@ export const translations = {
       list1: 'Institutional capacity',
       list2: 'Human capital',
       list3: 'International cooperation',
-      card1Title: 'Volunteering',
-      card1Desc: 'Join social initiatives and help those who need it most.',
+      card1Title: 'Civic Activism',
+      card1Desc: 'Join social initiatives and change the city with us.',
       card2Title: 'International Cooperation',
       card2Desc: 'Travel, learn, and exchange experience with youth from around the world.',
       card3Title: 'Leadership',
@@ -308,7 +308,7 @@ export const translations = {
     },
     contacts: {
       title: 'Join the KMMR Team',
-      subtitle: 'Fill out the form to become a volunteer and change Kyiv with us.',
+      subtitle: 'Fill out the form to join the team and change Kyiv with us.',
       successTitle: 'Application Sent!',
       successDesc: 'Thank you for your initiative. Our HR department has received your data and will contact you shortly.',
       retryBtn: 'Send Another Application',
@@ -352,7 +352,7 @@ export const translations = {
         info: 'Informational support (reposts, announcements)',
         resource: 'Resource support (premises, equipment)',
         partnership: 'Partnership / Co-organization',
-        volunteers: 'Volunteers attraction',
+        volunteers: 'Youth engagement',
         mentor: 'Expert / Mentor assistance',
         other: 'Other'
       },
@@ -376,7 +376,7 @@ export const translations = {
         memoLink: 'Memorandum'
       },
       volunteer: {
-        title: 'VOLUNTEER',
+        title: 'PARTICIPANT',
         subtitle: 'Want to gain experience and work',
         fillForm: 'Fill out the form',
         readProposal: 'Read about opportunities',
@@ -405,7 +405,7 @@ export const translations = {
       news: 'News',
       newsDesc: 'Stay updated on the latest opportunities.',
       follow: 'Follow Us',
-      desc: 'The largest volunteer youth association in Kyiv. A separate subdivision of the National Youth Council of Ukraine.',
+      desc: 'The largest youth association in Kyiv. A separate subdivision of the National Youth Council of Ukraine.',
       rights: 'All rights reserved.',
       memberOf: 'Part of the National Youth Council of Ukraine'
     },
@@ -436,7 +436,7 @@ export const translations = {
       who: {
         tag: 'Who We Are',
         title: 'Kyiv City Youth Council',
-        p1: 'Kyiv City Youth Council (KCYC) is a self-governing youth institution at the city level, working on a volunteer basis.',
+        p1: 'Kyiv City Youth Council (KCYC) is a self-governing youth institution at the city level, working on a public basis.',
         p2: 'We engage youth in policy-making in Kyiv and act as a stable voice for young people in the city.',
         p3: 'Our mission is to create conditions where every young Kyivan can realize their potential. KCYC is known in the city as a platform that young people strive to join, as well as a practice base for students – since 2021, about 70 interns have completed internships here.'
       },
@@ -478,7 +478,7 @@ export const translations = {
       tag: 'Development',
       title: 'Current Opportunities',
       types: {
-        volunteering: 'Volunteering',
+        volunteering: 'Projects',
         education: 'Education',
         event: 'Event',
         job: 'Job'

@@ -6,7 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { onSnapshot, query, collection } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { Loader2, Instagram } from 'lucide-react';
-
+import { OptimizedImage } from './ui/OptimizedImage';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 interface TeamSectionProps {
@@ -128,10 +128,11 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
         {selectedMember && (
           <div className="flex flex-col md:flex-row overflow-hidden bg-white dark:bg-gray-800 transition-colors">
             <div className="md:w-1/3 h-64 md:h-auto bg-gray-100 dark:bg-gray-700">
-              <img 
+              <OptimizedImage 
                 src={selectedMember.image} 
                 alt={getMemberName(selectedMember)} 
                 className="w-full h-full object-cover"
+                containerClassName="h-full w-full"
               />
             </div>
             <div className="md:w-2/3 p-8">
@@ -246,10 +247,11 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
                           className="group relative bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
                         >
                           <div className="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
-                            <img 
+                            <OptimizedImage 
                               src={member.image} 
                               alt={getMemberName(member)} 
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              containerClassName="w-full h-full"
                             />
                           </div>
                           <div className="p-4">
@@ -276,10 +278,11 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
         {selectedMember && (
           <div className="flex flex-col md:flex-row overflow-hidden bg-white dark:bg-gray-800 transition-colors">
             <div className="md:w-1/3 h-64 md:h-auto bg-gray-100 dark:bg-gray-700">
-              <img 
+              <OptimizedImage 
                 src={selectedMember.image} 
                 alt={getMemberName(selectedMember)} 
                 className="w-full h-full object-cover"
+                containerClassName="h-full w-full"
               />
             </div>
             <div className="md:w-2/3 p-8">

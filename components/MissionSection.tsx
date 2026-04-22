@@ -1,4 +1,5 @@
 import React from 'react';
+import { OptimizedImage } from './ui/OptimizedImage';
 import { useLanguage } from '../context/LanguageContext';
 
 export const MissionSection: React.FC = () => {
@@ -8,10 +9,11 @@ export const MissionSection: React.FC = () => {
     <section className="relative py-20 overflow-hidden">
       {/* Background Image with Dark Overlay */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src="https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2F1228.jpg?alt=media&token=8c94628b-77a2-4702-93c1-8f3933f92640" 
+        <OptimizedImage 
+          src="https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/Photo%2F1228.jpg?alt=media&token=1f7262b0-63d9-447c-bc0d-1dab5fd1e5b6" 
           alt="Youth Meeting Background" 
           className="w-full h-full object-cover"
+          containerClassName="w-full h-full"
         />
         {/* Strong blue overlay to match the screenshot */}
         <div className="absolute inset-0 bg-kmmr-blue/90 mix-blend-multiply"></div>

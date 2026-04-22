@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { SDGS_UK, SDGS_EN, PARTNER_GROUPS_UK, PARTNER_GROUPS_EN, TIMELINE_EVENTS_UK, TIMELINE_EVENTS_EN, CAPACITY_UK, CAPACITY_EN } from '../constants';
 import { GraduationCap, Megaphone, HeartHandshake, X, Facebook, Instagram, Linkedin, Send, Youtube } from 'lucide-react';
+import { OptimizedImage } from './ui/OptimizedImage';
 import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { onSnapshot, collection } from 'firebase/firestore';
@@ -106,10 +107,11 @@ export const AboutSection: React.FC = () => {
           </div>
           <div className="relative">
             <div className="absolute -inset-4 bg-kmmr-green/20 rounded-3xl transform rotate-3"></div>
-            <img 
-              src="https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2F1228.jpg?alt=media&token=8c94628b-77a2-4702-93c1-8f3933f92640" 
+            <OptimizedImage 
+              src="https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/Photo%2FIMG_7089.JPG?alt=media&token=48bdd686-39fb-48c4-a5de-c9c9ae29f51f" 
               alt="КММР Team" 
               className="relative rounded-3xl shadow-2xl object-cover w-full h-full"
+              containerClassName="w-full aspect-[4/3] md:aspect-auto md:h-full lg:aspect-[4/3] rounded-3xl"
             />
           </div>
         </div>
@@ -364,7 +366,7 @@ export const AboutSection: React.FC = () => {
                   {group.items.map((partner: any, idx: number) => (
                       <div key={idx} className="group relative bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                            <div className="aspect-video overflow-hidden relative flex items-center justify-center p-4 bg-white">
-                            <img src={partner.image} alt={partner.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"/>
+                            <OptimizedImage src={partner.image} alt={partner.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"/>
                           </div>
                           <div className="p-4 flex items-center justify-center text-center h-20 bg-gray-50 dark:bg-gray-700">
                              <h4 className="font-bold text-sm text-kmmr-blue dark:text-gray-200 leading-tight">{partner.name}</h4>

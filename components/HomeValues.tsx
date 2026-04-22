@@ -1,5 +1,6 @@
 import React from 'react';
 import { Zap, Heart, Globe, Users } from 'lucide-react';
+import { OptimizedImage } from './ui/OptimizedImage';
 import { useLanguage } from '../context/LanguageContext';
 
 export const HomeValues: React.FC = () => {
@@ -15,10 +16,11 @@ export const HomeValues: React.FC = () => {
                {/* Abstract illustration placeholder using colored shapes if no image */}
                <div className="aspect-square rounded-full bg-kmmr-mint/30 dark:bg-kmmr-mint/10 absolute -top-10 -left-10 w-32 h-32 blur-2xl"></div>
                <div className="aspect-square rounded-full bg-kmmr-pink/20 dark:bg-kmmr-pink/10 absolute -bottom-10 -right-10 w-40 h-40 blur-2xl"></div>
-               <img 
-                 src="https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2F1228.jpg?alt=media&token=8c94628b-77a2-4702-93c1-8f3933f92640" 
+               <OptimizedImage 
+                 src="https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/Photo%2FDSC_9715.JPG?alt=media&token=d947bb30-20a5-4178-9f96-568475530815" 
                  alt="Collaboration" 
-                 className="relative rounded-3xl shadow-2xl rotate-2 hover:rotate-0 transition-all duration-500 z-10"
+                 className="relative rounded-3xl shadow-2xl rotate-2 hover:rotate-0 transition-all duration-500 z-10 w-full h-full object-cover"
+                 containerClassName="w-full aspect-[4/3] rounded-3xl"
                />
              </div>
            </div>

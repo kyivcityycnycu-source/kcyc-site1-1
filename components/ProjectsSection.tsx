@@ -6,6 +6,7 @@ import { onSnapshot, query, collection } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { Project, Opportunity } from '../types';
 import { Modal } from './ui/Modal';
+import { OptimizedImage } from './ui/OptimizedImage';
 import { ApplicationModal } from './ApplicationModal';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
@@ -155,10 +156,11 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
           {selectedProject && (
             <div className="flex flex-col bg-white dark:bg-gray-800 transition-colors">
               <div className="h-64 w-full relative">
-                 <img 
+                 <OptimizedImage 
                   src={selectedProject.image} 
                   alt={getProjectTitle(selectedProject)} 
                   className="w-full h-full object-cover rounded-t-2xl" 
+                  containerClassName="w-full h-full"
                  />
                  <div className="absolute top-4 left-4 flex flex-col items-start gap-2">
                    <div className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-kmmr-blue flex items-center gap-2 shadow-sm">
@@ -259,10 +261,11 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
                     className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full animate-fade-in-up cursor-pointer group transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700"
                   >
                     <div className="h-48 overflow-hidden relative">
-                      <img 
+                      <OptimizedImage 
                         src={project.image} 
                         alt={title} 
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        containerClassName="w-full h-full"
                       />
                       
                       <div className="absolute inset-0 bg-kmmr-blue/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
@@ -335,10 +338,11 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
         {selectedProject && (
           <div className="flex flex-col bg-white dark:bg-gray-800 transition-colors">
             <div className="h-64 w-full relative">
-               <img 
+               <OptimizedImage 
                 src={selectedProject.image} 
                 alt={getProjectTitle(selectedProject)} 
                 className="w-full h-full object-cover rounded-t-2xl" 
+                containerClassName="w-full h-full"
                />
                <div className="absolute top-4 left-4 flex flex-col items-start gap-2">
                  <div className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-kmmr-blue flex items-center gap-2 shadow-sm">

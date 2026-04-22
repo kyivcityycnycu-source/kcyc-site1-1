@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { OptimizedImage } from './ui/OptimizedImage';
 import { useLanguage } from '../context/LanguageContext';
 import { trackEvent } from '../services/analytics';
 import { scrollToSection } from '../lib/scroll';
@@ -28,10 +29,11 @@ export const HeroSection: React.FC = () => {
     <div className="relative h-[90vh] min-h-[600px] flex items-center overflow-hidden">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src="https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2F1228.jpg?alt=media&token=8c94628b-77a2-4702-93c1-8f3933f92640" 
+        <OptimizedImage 
+          src="https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/Photo%2F195162.jpg?alt=media&token=fc7b25f9-61d7-45f4-a1df-fc14a30051d9" 
           alt="Active Youth of Kyiv" 
           className="w-full h-full object-cover"
+          containerClassName="w-full h-full"
         />
         {/* Mobile: Vertical dark gradient from top to ensure text readability. Desktop: Horizontal gradient from left. */}
         <div className="absolute inset-0 bg-gradient-to-b from-kmmr-blue/90 via-kmmr-blue/60 to-transparent md:bg-gradient-to-r md:from-kmmr-blue/95 md:via-kmmr-blue/80 md:to-transparent"></div>

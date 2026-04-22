@@ -2279,7 +2279,7 @@ export const AdminDashboard: React.FC = () => {
                     onClick={() => { setSubmissionFilter('contact'); setSelectedDynamicFilter('all'); }}
                     className={`px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all ${submissionFilter === 'contact' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
                   >
-                    Волонтери
+                    Заявки в команду
                   </button>
                   <button 
                     onClick={() => { setSubmissionFilter('support'); setSelectedDynamicFilter('all'); }}
@@ -3418,7 +3418,7 @@ export const AdminDashboard: React.FC = () => {
 
                        </div>
 
-                       <div className="space-y-2"><label className="text-sm font-bold text-gray-700 dark:text-gray-300">Тип</label><select className="w-full border dark:border-gray-700 p-2 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" value={newOpp.type} onChange={e => setNewOpp({...newOpp, type: e.target.value as any})}><option value="Volunteering">Волонтерство</option><option value="Event">Подія</option><option value="Education">Навчання</option><option value="Job">Робота</option></select></div>
+                       <div className="space-y-2"><label className="text-sm font-bold text-gray-700 dark:text-gray-300">Тип</label><select className="w-full border dark:border-gray-700 p-2 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" value={newOpp.type} onChange={e => setNewOpp({...newOpp, type: e.target.value as any})}><option value="Volunteering">Проєкт</option><option value="Event">Подія</option><option value="Education">Навчання</option><option value="Job">Робота</option></select></div>
 
                        <div className="space-y-2"><label className="text-sm font-bold text-gray-700 dark:text-gray-300">Дедлайн (Залиште пустим для постійного набору)</label><input className="w-full border dark:border-gray-700 p-2 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" type="date" value={newOpp.deadline || ''} onChange={e => setNewOpp({...newOpp, deadline: e.target.value})} /></div>
 

@@ -7,8 +7,8 @@
     <title>Київська Міська Молодіжна Рада | КММР</title>
     
     <!-- Основні SEO теги -->
-    <meta name="description" content="Київська Міська Молодіжна Рада (КММР) —  Найбільше волонтерське молодіжне обʼєднання Києва. Платформа для консолідованої взаємодії учасників молодіжної політики міста Київ, з метою спільної роботи над розвитком молодіжної сфери та формування активної всебічно розвиненої молодої особистості." />
-    <meta name="keywords" content="КММР, Київська Міська Молодіжна Рада, молодь Києва, молодіжна політика, громадські організації, волонтерство, молодіжні ініціативи" />
+    <meta name="description" content="Київська Міська Молодіжна Рада (КММР) — Найбільше молодіжне обʼєднання Києва. Платформа для консолідованої взаємодії учасників молодіжної політики міста Київ, з метою спільної роботи над розвитком молодіжної сфери та формування активної всебічно розвиненої молодої особистості." />
+    <meta name="keywords" content="КММР, Київська Міська Молодіжна Рада, молодь Києва, молодіжна політика, громадські організації, молодіжні ініціативи" />
     <meta name="author" content="Київська Міська Молодіжна Рада" />
     <meta name="robots" content="index, follow" />
     
@@ -32,8 +32,8 @@
     <!-- Favicon Logic -->
     <script>
       (function() {
-        const lightIcon = "https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2FGroup%206680%20(1).png?alt=media&token=a82c8a88-8e02-40ba-9bcc-9126138fe47e";
-        const darkIcon = "https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2FFrame%201018%20(1).png?alt=media&token=a44eebf0-272c-4d07-9c14-83b8eb86af7e";
+        const lightIcon = "https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/LOGO%20KCYC%2FFrame%201015.png?alt=media&token=20a95cbe-9e20-4477-a15d-56c2dfab5760";
+        const darkIcon = "https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/LOGO%20KCYC%2FFrame%201018%20(1)%20(1).png?alt=media&token=4559e74f-633a-4c5e-905d-f13b354e0eda";
 
         function updateFavicon() {
           const favicon = document.getElementById('dynamic-favicon');
@@ -110,6 +110,21 @@
       }
       ::-webkit-scrollbar-thumb:hover {
         background: #D7269B;
+      }
+
+      /* Shimmer Animation */
+      @keyframes shimmer {
+        0% { background-position: -468px 0; }
+        100% { background-position: 468px 0; }
+      }
+      .animate-shimmer {
+        animation: shimmer 1.5s infinite linear;
+        background: linear-gradient(to right, #f6f7f8 8%, #edeef1 18%, #f6f7f8 33%);
+        background-size: 800px 104px;
+      }
+      .dark .animate-shimmer {
+        background: linear-gradient(to right, #1f2937 8%, #374151 18%, #1f2937 33%);
+        background-size: 800px 104px;
       }
     </style>
   </head>
