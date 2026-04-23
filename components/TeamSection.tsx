@@ -5,10 +5,11 @@ import { TeamMember, Department } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { onSnapshot, query, collection } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import { Loader2, Instagram } from 'lucide-react';
+import { Loader2, Instagram, Copy, Check } from 'lucide-react';
 import { OptimizedImage } from './ui/OptimizedImage';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { preloadImageUrls } from '../lib/preload';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface TeamSectionProps {
   onlyModal?: boolean;
@@ -22,6 +23,7 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
+  const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const { language, t } = useLanguage();
 
   // Sync selected member with URL ID
@@ -113,8 +115,16 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
   const getDeptName = (d: Department) => language === 'uk' ? d.name : (d.nameEn || d.name);
   const getDeptDesc = (d: Department) => language === 'uk' ? d.description : (d.descriptionEn || d.description);
 
+  const handleCopyEmail = (email: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    navigator.clipboard.writeText(email);
+    setCopiedEmail(email);
+    setTimeout(() => setCopiedEmail(null), 3000);
+  };
+
   const handleCloseModal = () => {
     setSelectedMember(null);
+    setCopiedEmail(null);
     if (location.state?.backgroundLocation) {
       navigate(-1);
     } else if (location.state?.fromHome) {
@@ -129,8 +139,8 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
     return (
       <Modal isOpen={!!selectedMember} onClose={handleCloseModal}>
         {selectedMember && (
-          <div className="flex flex-col md:flex-row overflow-hidden bg-white dark:bg-gray-800 transition-colors">
-            <div className="md:w-1/3 h-64 md:h-auto bg-gray-100 dark:bg-gray-700">
+          <div className="flex flex-col md:flex-row overflow-hidden bg-white dark:bg-gray-800 transition-colors text-left">
+            <div className="md:w-1/3 aspect-square md:aspect-auto bg-gray-100 dark:bg-gray-700">
               <OptimizedImage 
                 src={selectedMember.image} 
                 alt={getMemberName(selectedMember)} 
@@ -160,14 +170,34 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
                  </ul>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4 relative">
                 {selectedMember.email && (
-                  <a 
-                    href={`mailto:${selectedMember.email}`}
-                    className="inline-flex items-center gap-2 text-kmmr-blue dark:text-blue-400 hover:text-kmmr-pink font-semibold transition-colors"
+                  <button 
+                    onClick={(e) => handleCopyEmail(selectedMember.email!, e)}
+                    className="inline-flex items-center gap-2 text-kmmr-blue dark:text-blue-400 hover:text-kmmr-pink font-semibold transition-colors group relative"
                   >
-                    {t('team.modal.contact')} {selectedMember.email}
-                  </a>
+                    <span>{t('team.modal.contact')} {selectedMember.email}</span>
+                    <div className="flex items-center justify-center w-5 h-5">
+                      {copiedEmail === selectedMember.email ? (
+                        <Check size={16} className="text-green-500 animate-in zoom-in duration-300" />
+                      ) : (
+                        <Copy size={16} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+                      )}
+                    </div>
+                    
+                    <AnimatePresence>
+                      {copiedEmail === selectedMember.email && (
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.5, y: -10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.5, y: -10 }}
+                          className="absolute top-full left-0 mt-1 bg-green-500 text-white text-[10px] py-1 px-3 rounded-full shadow-lg z-50 pointer-events-none"
+                        >
+                          {language === 'uk' ? 'Email скопійовано!' : 'Email copied!'}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </button>
                 )}
 
                 {selectedMember.instagram && (
@@ -280,7 +310,7 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
       <Modal isOpen={!!selectedMember} onClose={handleCloseModal}>
         {selectedMember && (
           <div className="flex flex-col md:flex-row overflow-hidden bg-white dark:bg-gray-800 transition-colors">
-            <div className="md:w-1/3 h-64 md:h-auto bg-gray-100 dark:bg-gray-700">
+            <div className="md:w-1/3 aspect-square md:aspect-auto bg-gray-100 dark:bg-gray-700">
               <OptimizedImage 
                 src={selectedMember.image} 
                 alt={getMemberName(selectedMember)} 
@@ -310,14 +340,34 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
                  </ul>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4 relative">
                 {selectedMember.email && (
-                  <a 
-                    href={`mailto:${selectedMember.email}`}
-                    className="inline-flex items-center gap-2 text-kmmr-blue dark:text-blue-400 hover:text-kmmr-pink font-semibold transition-colors"
+                  <button 
+                    onClick={(e) => handleCopyEmail(selectedMember.email!, e)}
+                    className="inline-flex items-center gap-2 text-kmmr-blue dark:text-blue-400 hover:text-kmmr-pink font-semibold transition-colors group relative"
                   >
-                    {t('team.modal.contact')} {selectedMember.email}
-                  </a>
+                    <span>{t('team.modal.contact')} {selectedMember.email}</span>
+                    <div className="flex items-center justify-center w-5 h-5">
+                      {copiedEmail === selectedMember.email ? (
+                        <Check size={16} className="text-green-500 animate-in zoom-in duration-300" />
+                      ) : (
+                        <Copy size={16} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+                      )}
+                    </div>
+                    
+                    <AnimatePresence>
+                      {copiedEmail === selectedMember.email && (
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.5, y: -10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.5, y: -10 }}
+                          className="absolute top-full left-0 mt-1 bg-green-500 text-white text-[10px] py-1 px-3 rounded-full shadow-lg z-50 pointer-events-none"
+                        >
+                          {language === 'uk' ? 'Email скопійовано!' : 'Email copied!'}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </button>
                 )}
 
                 {selectedMember.instagram && (
