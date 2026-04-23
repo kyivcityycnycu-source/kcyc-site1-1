@@ -22,6 +22,7 @@ import { ContactSubmission, DocumentItem, Project, Opportunity, TeamMember, Depa
 
 import { ApplicationDetailsModal } from '../components/ApplicationDetailsModal';
 import { AdminFormBuilder } from '../components/AdminFormBuilder';
+import { compressImage } from '../lib/imageUtils';
 
 // We will dynamically import xlsx when needed to avoid window.fetch overwrite error
 
@@ -863,13 +864,16 @@ export const AdminDashboard: React.FC = () => {
 
 
   const handleFileUpload = async (file: File, folder: string): Promise<string> => {
+    let fileToUpl: File | Blob = file;
+    
+    // Only compress images, keep other files (like docs) as they are
+    if (file.type.startsWith('image/')) {
+      fileToUpl = await compressImage(file);
+    }
 
     const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
-
-    await uploadBytes(storageRef, file);
-
+    await uploadBytes(storageRef, fileToUpl);
     return await getDownloadURL(storageRef);
-
   };
 
 

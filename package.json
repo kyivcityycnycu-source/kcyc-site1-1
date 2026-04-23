@@ -10,6 +10,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "browser-image-compression": "^2.0.2",
     "firebase": "^10.8.0",
     "lucide-react": "^0.344.0",
     "motion": "^12.38.0",

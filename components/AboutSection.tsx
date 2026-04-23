@@ -11,6 +11,7 @@ import { db } from '../firebaseConfig';
 import { PartnerItem, PartnerType } from '../types';
 import { InternshipModal } from './InternshipModal';
 import { SocialModal } from './SocialModal';
+import { preloadImageUrls } from '../lib/preload';
 
 export const AboutSection: React.FC = () => {
   const { language, t } = useLanguage();
@@ -36,6 +37,8 @@ export const AboutSection: React.FC = () => {
          return orderA - orderB;
       });
       setFetchedPartners(data);
+      // Preload partner logos
+      preloadImageUrls(data.map(p => p.image).filter(Boolean));
     }, (error) => {
       console.error("Error watching partners:", error);
     });
@@ -49,6 +52,8 @@ export const AboutSection: React.FC = () => {
          return orderA - orderB;
       });
       setFetchedPartnerTypes(data);
+      // Preload partner type icons
+      preloadImageUrls(data.map(t => t.icon).filter(Boolean) as string[]);
     }, (error) => {
       console.error("Error watching partner types:", error);
     });
@@ -112,6 +117,7 @@ export const AboutSection: React.FC = () => {
               alt="КММР Team" 
               className="relative rounded-3xl shadow-2xl object-cover w-full h-full"
               containerClassName="w-full aspect-[4/3] md:aspect-auto md:h-full lg:aspect-[4/3] rounded-3xl"
+              isPriority
             />
           </div>
         </div>

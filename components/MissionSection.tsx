@@ -14,6 +14,7 @@ export const MissionSection: React.FC = () => {
           alt="Youth Meeting Background" 
           className="w-full h-full object-cover"
           containerClassName="w-full h-full"
+          isPriority
         />
         {/* Strong blue overlay to match the screenshot */}
         <div className="absolute inset-0 bg-kmmr-blue/90 mix-blend-multiply"></div>

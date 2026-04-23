@@ -7,6 +7,7 @@ import { db } from '../firebaseConfig';
 import { Opportunity, Project } from '../types';
 import { ApplicationModal } from './ApplicationModal';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { preloadImageUrls } from '../lib/preload';
 
 interface OpportunitiesSectionProps {
   onlyModal?: boolean;
@@ -144,7 +145,8 @@ export const OpportunitiesSection: React.FC<OpportunitiesSectionProps> = ({ only
         });
 
         setOpportunities(combinedOpps);
-
+        // Preload opportunity images
+        preloadImageUrls(combinedOpps.map(o => o.image).filter(Boolean) as string[]);
       } catch (error) {
         console.warn("Error fetching data:", error);
         // Fallback on error

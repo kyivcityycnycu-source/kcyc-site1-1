@@ -9,6 +9,7 @@ import { Modal } from './ui/Modal';
 import { OptimizedImage } from './ui/OptimizedImage';
 import { ApplicationModal } from './ApplicationModal';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { preloadImageUrls } from '../lib/preload';
 
 interface ProjectsSectionProps {
   limit?: number;
@@ -73,6 +74,8 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
       });
 
       setProjects(displayProjects);
+      // Preload dynamic project images
+      preloadImageUrls(displayProjects.map(p => p.image).filter(Boolean));
       setLoading(false);
     }, (error) => {
       console.warn("Error fetching projects:", error);

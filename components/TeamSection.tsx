@@ -8,6 +8,7 @@ import { db } from '../firebaseConfig';
 import { Loader2, Instagram } from 'lucide-react';
 import { OptimizedImage } from './ui/OptimizedImage';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { preloadImageUrls } from '../lib/preload';
 
 interface TeamSectionProps {
   onlyModal?: boolean;
@@ -80,6 +81,8 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
 
         if (fetchedTeam.length > 0) {
           setTeamMembers(fetchedTeam);
+          // Preload member photos
+          preloadImageUrls(fetchedTeam.map(m => m.image).filter(Boolean));
         } else {
           setTeamMembers(language === 'uk' ? TEAM_MEMBERS_UK : TEAM_MEMBERS_EN);
         }

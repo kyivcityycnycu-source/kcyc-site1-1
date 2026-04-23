@@ -21,6 +21,7 @@ export const HomeValues: React.FC = () => {
                  alt="Collaboration" 
                  className="relative rounded-3xl shadow-2xl rotate-2 hover:rotate-0 transition-all duration-500 z-10 w-full h-full object-cover"
                  containerClassName="w-full aspect-[4/3] rounded-3xl"
+                 isPriority
                />
              </div>
            </div>

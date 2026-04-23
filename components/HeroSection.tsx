@@ -34,6 +34,7 @@ export const HeroSection: React.FC = () => {
           alt="Active Youth of Kyiv" 
           className="w-full h-full object-cover"
           containerClassName="w-full h-full"
+          isPriority
         />
         {/* Mobile: Vertical dark gradient from top to ensure text readability. Desktop: Horizontal gradient from left. */}
         <div className="absolute inset-0 bg-gradient-to-b from-kmmr-blue/90 via-kmmr-blue/60 to-transparent md:bg-gradient-to-r md:from-kmmr-blue/95 md:via-kmmr-blue/80 md:to-transparent"></div>
