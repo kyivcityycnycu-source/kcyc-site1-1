@@ -158,12 +158,12 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
         <Modal isOpen={!!selectedProject} onClose={handleCloseModal} size="4xl">
           {selectedProject && (
             <div className="flex flex-col bg-white dark:bg-gray-800 transition-colors">
-              <div className="h-64 w-full relative">
+              <div className="w-full aspect-[2/1] relative overflow-hidden rounded-t-2xl">
                  <OptimizedImage 
                   src={selectedProject.image} 
                   alt={getProjectTitle(selectedProject)} 
-                  className="w-full h-full object-cover rounded-t-2xl" 
-                  containerClassName="w-full h-full"
+                  className="absolute inset-0 w-full h-full object-cover" 
+                  containerClassName="absolute inset-0 w-full h-full"
                  />
                  <div className="absolute top-4 left-4 flex flex-col items-start gap-2">
                    <div className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-kmmr-blue flex items-center gap-2 shadow-sm">
@@ -263,12 +263,12 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
                     }}
                     className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full animate-fade-in-up cursor-pointer group transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700"
                   >
-                    <div className="h-48 overflow-hidden relative">
+                    <div className="w-full aspect-[2/1] overflow-hidden relative">
                       <OptimizedImage 
                         src={project.image} 
                         alt={title} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        containerClassName="w-full h-full"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        containerClassName="absolute inset-0 w-full h-full"
                       />
                       
                       <div className="absolute inset-0 bg-kmmr-blue/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
@@ -340,12 +340,12 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
       <Modal isOpen={!!selectedProject} onClose={handleCloseModal} size="4xl">
         {selectedProject && (
           <div className="flex flex-col bg-white dark:bg-gray-800 transition-colors">
-            <div className="h-64 w-full relative">
+            <div className="w-full aspect-[2/1] relative overflow-hidden rounded-t-2xl">
                <OptimizedImage 
                 src={selectedProject.image} 
                 alt={getProjectTitle(selectedProject)} 
-                className="w-full h-full object-cover rounded-t-2xl" 
-                containerClassName="w-full h-full"
+                className="absolute inset-0 w-full h-full object-cover" 
+                containerClassName="absolute inset-0 w-full h-full"
                />
                <div className="absolute top-4 left-4 flex flex-col items-start gap-2">
                  <div className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-kmmr-blue flex items-center gap-2 shadow-sm">
