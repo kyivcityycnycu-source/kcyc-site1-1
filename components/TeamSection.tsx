@@ -103,7 +103,12 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
 
   // Function to get members for a specific department
   const getMembersByDept = (deptId: string) => {
-    return teamMembers.filter(m => m.department === deptId);
+    return teamMembers.filter(m => {
+      if (Array.isArray(m.departments) && m.departments.length > 0) {
+        return m.departments.includes(deptId);
+      }
+      return m.department === deptId;
+    });
   };
 
   // Helper to get localized text
@@ -137,47 +142,54 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
   // If onlyModal is true, we only render the modal part
   if (onlyModal) {
     return (
-      <Modal isOpen={!!selectedMember} onClose={handleCloseModal}>
+      <Modal isOpen={!!selectedMember} onClose={handleCloseModal} size="7xl">
         {selectedMember && (
-          <div className="flex flex-col md:flex-row overflow-hidden bg-white dark:bg-gray-800 transition-colors text-left">
-            <div className="md:w-1/3 aspect-square md:aspect-auto bg-gray-100 dark:bg-gray-700">
+          <div className="flex flex-col lg:flex-row landscape:flex-row overflow-hidden bg-white dark:bg-gray-800 transition-colors text-left w-full lg:h-[500px] xl:h-[580px] landscape:h-[250px] landscape:sm:h-[300px] landscape:md:h-[300px] landscape:lg:h-[500px] landscape:xl:h-[580px]">
+            <div className="relative w-full aspect-square lg:w-[500px] lg:h-[500px] xl:w-[580px] xl:h-[580px] landscape:w-[250px] landscape:h-[250px] landscape:sm:w-[300px] landscape:sm:h-[300px] landscape:md:w-[300px] landscape:md:h-[300px] landscape:lg:w-[500px] landscape:lg:h-[500px] landscape:xl:w-[580px] landscape:xl:h-[580px] bg-gray-100 dark:bg-gray-700 shrink-0 overflow-hidden">
               <OptimizedImage 
                 src={selectedMember.image} 
                 alt={getMemberName(selectedMember)} 
-                className="w-full h-full object-cover"
-                containerClassName="h-full w-full"
+                className="absolute inset-0 w-full h-full object-cover animate-fade-in"
+                containerClassName="absolute inset-0 w-full h-full"
               />
             </div>
-            <div className="md:w-2/3 p-8">
-              <div className="mb-6">
-                <h3 className="text-3xl font-black text-kmmr-blue dark:text-white mb-2">{getMemberName(selectedMember)}</h3>
-                <span className="bg-kmmr-green/10 text-kmmr-green px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wide">
-                  {getMemberRole(selectedMember)}
-                </span>
+            <div className="flex-1 lg:w-[500px] xl:w-[580px] lg:shrink-0 xl:shrink-0 landscape:lg:w-[500px] landscape:xl:w-[580px] landscape:lg:shrink-0 landscape:xl:shrink-0 p-5 md:p-6 lg:p-8 xl:p-10 flex flex-col justify-start lg:overflow-hidden lg:h-full landscape:overflow-hidden landscape:h-full landscape:overflow-y-auto lg:overflow-y-auto">
+              <div className="mb-4 shrink-0">
+                <h3 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-black text-kmmr-blue dark:text-white mb-2 leading-tight">{getMemberName(selectedMember)}</h3>
+                <div className="flex flex-wrap items-start justify-start gap-1.5">
+                  {getMemberRole(selectedMember).split(',').map((role, idx) => (
+                    <span 
+                      key={idx} 
+                      className="inline-block bg-kmmr-green/10 text-kmmr-green px-3 py-1 lg:px-4 lg:py-1.5 rounded-xl text-[10px] sm:text-xs lg:text-sm font-bold uppercase tracking-wide leading-normal text-left w-max max-w-full"
+                    >
+                      {role.trim()}
+                    </span>
+                  ))}
+                </div>
               </div>
               
-              <div className="space-y-4 mb-8">
-                 <p className="text-gray-600 dark:text-gray-300 italic text-lg">"{getMemberBio(selectedMember)}"</p>
-                 <div className="h-px bg-gray-100 dark:bg-gray-700 w-full my-4"></div>
-                 <h5 className="font-bold text-kmmr-blue dark:text-gray-200 uppercase text-sm">{t('team.modal.role')}</h5>
-                 <ul className="space-y-2">
+              <div className="space-y-3.5 mb-5 overflow-y-auto landscape:overflow-y-visible landscape:flex-none lg:overflow-y-visible lg:flex-none flex-1 pr-1">
+                 <p className="text-gray-600 dark:text-gray-300 italic text-sm sm:text-base lg:text-lg xl:text-xl xl:leading-relaxed">"{getMemberBio(selectedMember)}"</p>
+                 <div className="h-px bg-gray-100 dark:bg-gray-700 w-full my-3"></div>
+                 <h5 className="font-bold text-kmmr-blue dark:text-gray-200 uppercase text-[10px] sm:text-xs lg:text-sm xl:text-base">{t('team.modal.role')}</h5>
+                 <ul className="space-y-1.5">
                    {getMemberDetails(selectedMember)?.map((detail, idx) => (
-                     <li key={idx} className="flex items-start gap-2 text-gray-600 dark:text-gray-400 text-sm">
-                       <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-kmmr-pink shrink-0"></span>
+                     <li key={idx} className="flex items-start gap-2 text-gray-600 dark:text-gray-400 text-xs sm:text-sm lg:text-base xl:text-lg">
+                       <span className="mt-1.5 lg:mt-2.5 w-1.5 lg:w-2 h-1.5 lg:h-2 rounded-full bg-kmmr-pink shrink-0"></span>
                        <span>{detail}</span>
                      </li>
                    ))}
                  </ul>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 relative">
+              <div className="flex items-center justify-between gap-4 pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto shrink-0">
                 {selectedMember.email && (
                   <button 
                     onClick={(e) => handleCopyEmail(selectedMember.email!, e)}
-                    className="inline-flex items-center gap-2 text-kmmr-blue dark:text-blue-400 hover:text-kmmr-pink font-semibold transition-colors group relative"
+                    className="inline-flex items-center text-left justify-start gap-2 text-kmmr-blue dark:text-blue-400 hover:text-kmmr-pink font-semibold transition-colors group relative text-xs sm:text-sm lg:text-base xl:text-lg cursor-pointer"
                   >
-                    <span>{t('team.modal.contact')} {selectedMember.email}</span>
-                    <div className="flex items-center justify-center w-5 h-5">
+                    <span className="text-left break-all">{t('team.modal.contact')} {selectedMember.email}</span>
+                    <div className="flex items-center justify-center w-5 h-5 shrink-0">
                       {copiedEmail === selectedMember.email ? (
                         <Check size={16} className="text-green-500 animate-in zoom-in duration-300" />
                       ) : (
@@ -188,10 +200,10 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
                     <AnimatePresence>
                       {copiedEmail === selectedMember.email && (
                         <motion.div 
-                          initial={{ opacity: 0, scale: 0.5, y: -10 }}
+                          initial={{ opacity: 0, scale: 0.5, y: 10 }}
                           animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.5, y: -10 }}
-                          className="absolute top-full left-0 mt-1 bg-green-500 text-white text-[10px] py-1 px-3 rounded-full shadow-lg z-50 pointer-events-none"
+                          exit={{ opacity: 0, scale: 0.5, y: 10 }}
+                          className="absolute bottom-full left-0 mb-1 bg-green-500 text-white text-[10px] py-1 px-3 rounded-full shadow-lg z-50 pointer-events-none"
                         >
                           {language === 'uk' ? 'Email скопійовано!' : 'Email copied!'}
                         </motion.div>
@@ -307,47 +319,54 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
       </div>
 
       {/* Detail Modal */}
-      <Modal isOpen={!!selectedMember} onClose={handleCloseModal}>
+      <Modal isOpen={!!selectedMember} onClose={handleCloseModal} size="7xl">
         {selectedMember && (
-          <div className="flex flex-col md:flex-row overflow-hidden bg-white dark:bg-gray-800 transition-colors">
-            <div className="md:w-1/3 aspect-square md:aspect-auto bg-gray-100 dark:bg-gray-700">
+          <div className="flex flex-col lg:flex-row landscape:flex-row overflow-hidden bg-white dark:bg-gray-800 transition-colors text-left w-full lg:h-[500px] xl:h-[580px] landscape:h-[250px] landscape:sm:h-[300px] landscape:md:h-[300px] landscape:lg:h-[500px] landscape:xl:h-[580px]">
+            <div className="relative w-full aspect-square lg:w-[500px] lg:h-[500px] xl:w-[580px] xl:h-[580px] landscape:w-[250px] landscape:h-[250px] landscape:sm:w-[300px] landscape:sm:h-[300px] landscape:md:w-[300px] landscape:md:h-[300px] landscape:lg:w-[500px] landscape:lg:h-[500px] landscape:xl:w-[580px] landscape:xl:h-[580px] bg-gray-100 dark:bg-gray-700 shrink-0 overflow-hidden">
               <OptimizedImage 
                 src={selectedMember.image} 
                 alt={getMemberName(selectedMember)} 
-                className="w-full h-full object-cover"
-                containerClassName="h-full w-full"
+                className="absolute inset-0 w-full h-full object-cover animate-fade-in"
+                containerClassName="absolute inset-0 w-full h-full"
               />
             </div>
-            <div className="md:w-2/3 p-8">
-              <div className="mb-6">
-                <h3 className="text-3xl font-black text-kmmr-blue dark:text-white mb-2">{getMemberName(selectedMember)}</h3>
-                <span className="bg-kmmr-green/10 text-kmmr-green px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wide">
-                  {getMemberRole(selectedMember)}
-                </span>
+            <div className="flex-1 lg:w-[500px] xl:w-[580px] lg:shrink-0 xl:shrink-0 landscape:lg:w-[500px] landscape:xl:w-[580px] landscape:lg:shrink-0 landscape:xl:shrink-0 p-5 md:p-6 lg:p-8 xl:p-10 flex flex-col justify-start lg:overflow-hidden lg:h-full landscape:overflow-hidden landscape:h-full landscape:overflow-y-auto lg:overflow-y-auto">
+              <div className="mb-4 shrink-0">
+                <h3 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-black text-kmmr-blue dark:text-white mb-2 leading-tight">{getMemberName(selectedMember)}</h3>
+                <div className="flex flex-wrap items-start justify-start gap-1.5">
+                  {getMemberRole(selectedMember).split(',').map((role, idx) => (
+                    <span 
+                      key={idx} 
+                      className="inline-block bg-kmmr-green/10 text-kmmr-green px-3 py-1 lg:px-4 lg:py-1.5 rounded-xl text-[10px] sm:text-xs lg:text-sm font-bold uppercase tracking-wide leading-normal text-left w-max max-w-full"
+                    >
+                      {role.trim()}
+                    </span>
+                  ))}
+                </div>
               </div>
               
-              <div className="space-y-4 mb-8">
-                 <p className="text-gray-600 dark:text-gray-300 italic text-lg">"{getMemberBio(selectedMember)}"</p>
-                 <div className="h-px bg-gray-100 dark:bg-gray-700 w-full my-4"></div>
-                 <h5 className="font-bold text-kmmr-blue dark:text-gray-200 uppercase text-sm">{t('team.modal.role')}</h5>
-                 <ul className="space-y-2">
+              <div className="space-y-3.5 mb-5 overflow-y-auto landscape:overflow-y-visible landscape:flex-none lg:overflow-y-visible lg:flex-none flex-1 pr-1">
+                 <p className="text-gray-600 dark:text-gray-300 italic text-sm sm:text-base lg:text-lg xl:text-xl xl:leading-relaxed">"{getMemberBio(selectedMember)}"</p>
+                 <div className="h-px bg-gray-100 dark:bg-gray-700 w-full my-3"></div>
+                 <h5 className="font-bold text-kmmr-blue dark:text-gray-200 uppercase text-[10px] sm:text-xs lg:text-sm xl:text-base">{t('team.modal.role')}</h5>
+                 <ul className="space-y-1.5">
                    {getMemberDetails(selectedMember)?.map((detail, idx) => (
-                     <li key={idx} className="flex items-start gap-2 text-gray-600 dark:text-gray-400 text-sm">
-                       <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-kmmr-pink shrink-0"></span>
+                     <li key={idx} className="flex items-start gap-2 text-gray-600 dark:text-gray-400 text-xs sm:text-sm lg:text-base xl:text-lg">
+                       <span className="mt-1.5 lg:mt-2.5 w-1.5 lg:w-2 h-1.5 lg:h-2 rounded-full bg-kmmr-pink shrink-0"></span>
                        <span>{detail}</span>
                      </li>
                    ))}
                  </ul>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 relative">
+              <div className="flex items-center justify-between gap-4 pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto shrink-0">
                 {selectedMember.email && (
                   <button 
                     onClick={(e) => handleCopyEmail(selectedMember.email!, e)}
-                    className="inline-flex items-center gap-2 text-kmmr-blue dark:text-blue-400 hover:text-kmmr-pink font-semibold transition-colors group relative"
+                    className="inline-flex items-center text-left justify-start gap-2 text-kmmr-blue dark:text-blue-400 hover:text-kmmr-pink font-semibold transition-colors group relative text-xs sm:text-sm lg:text-base xl:text-lg cursor-pointer"
                   >
-                    <span>{t('team.modal.contact')} {selectedMember.email}</span>
-                    <div className="flex items-center justify-center w-5 h-5">
+                    <span className="text-left break-all">{t('team.modal.contact')} {selectedMember.email}</span>
+                    <div className="flex items-center justify-center w-5 h-5 shrink-0">
                       {copiedEmail === selectedMember.email ? (
                         <Check size={16} className="text-green-500 animate-in zoom-in duration-300" />
                       ) : (
@@ -358,10 +377,10 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
                     <AnimatePresence>
                       {copiedEmail === selectedMember.email && (
                         <motion.div 
-                          initial={{ opacity: 0, scale: 0.5, y: -10 }}
+                          initial={{ opacity: 0, scale: 0.5, y: 10 }}
                           animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.5, y: -10 }}
-                          className="absolute top-full left-0 mt-1 bg-green-500 text-white text-[10px] py-1 px-3 rounded-full shadow-lg z-50 pointer-events-none"
+                          exit={{ opacity: 0, scale: 0.5, y: 10 }}
+                          className="absolute bottom-full left-0 mb-1 bg-green-500 text-white text-[10px] py-1 px-3 rounded-full shadow-lg z-50 pointer-events-none"
                         >
                           {language === 'uk' ? 'Email скопійовано!' : 'Email copied!'}
                         </motion.div>

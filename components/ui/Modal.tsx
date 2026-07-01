@@ -22,7 +22,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, size = 
     '4xl': 'max-w-4xl',
     '5xl': 'max-w-5xl',
     '6xl': 'max-w-6xl',
-    '7xl': 'max-w-7xl',
+    '7xl': 'max-w-lg landscape:max-w-2xl sm:landscape:max-w-3xl md:max-w-2xl lg:max-w-[1040px] lg:landscape:max-w-[1040px] xl:max-w-[1200px] xl:landscape:max-w-[1200px] 2xl:max-w-[1200px] 2xl:landscape:max-w-[1200px]',
     full: 'max-w-[95vw]'
   };
 

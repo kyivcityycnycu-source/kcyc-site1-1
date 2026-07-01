@@ -7,6 +7,7 @@ export interface TeamMember {
   role: string;
   roleEn?: string;
   department: string; // ID of the department
+  departments?: string[]; // Multiple departments
   bio: string;
   bioEn?: string;
   email?: string;

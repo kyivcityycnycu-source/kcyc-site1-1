@@ -42,8 +42,8 @@ export const Navbar: React.FC = () => {
             <Logo className="h-16 md:h-20" />
           </div>
 
-          {/* Desktop Menu (Visible only on LG screens and up) */}
-          <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+          {/* Desktop Menu (Visible only on XL screens and up) */}
+          <div className="hidden xl:flex items-center space-x-6 xl:space-x-8">
             {currentLinks.map((link) => (
               <NavLink
                 key={link.path}
@@ -89,7 +89,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile/Tablet menu button */}
-          <div className="lg:hidden flex items-center gap-3">
+          <div className="xl:hidden flex items-center gap-3">
              <button
                 onClick={toggleTheme}
                 className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-kmmr-blue dark:text-gray-200 transition-colors"
@@ -118,7 +118,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile/Tablet Menu Dropdown */}
       {isOpen && (
-        <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 absolute w-full shadow-xl">
+        <div className="xl:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 absolute w-full shadow-xl">
           <div className="px-4 pt-2 pb-6 space-y-2">
             {currentLinks.map((link) => (
               <NavLink

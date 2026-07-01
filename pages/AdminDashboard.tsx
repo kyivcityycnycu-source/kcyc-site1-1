@@ -813,7 +813,13 @@ export const AdminDashboard: React.FC = () => {
 
   const moveTeamMember = async (index: number, direction: 'up' | 'down') => {
 
-     const visibleMembers = teamMembers.filter(m => teamFilterDept === 'all' || m.department === teamFilterDept);
+     const visibleMembers = teamMembers.filter(m => {
+       if (teamFilterDept === 'all') return true;
+       if (Array.isArray(m.departments) && m.departments.length > 0) {
+         return m.departments.includes(teamFilterDept);
+       }
+       return m.department === teamFilterDept;
+     });
 
      if ((direction === 'up' && index === 0) || (direction === 'down' && index === visibleMembers.length - 1)) return;
 
@@ -847,7 +853,13 @@ export const AdminDashboard: React.FC = () => {
 
        // Re-index only visible members to maintain their relative order
 
-       const newVisible = newFullList.filter(m => teamFilterDept === 'all' || m.department === teamFilterDept);
+       const newVisible = newFullList.filter(m => {
+          if (teamFilterDept === 'all') return true;
+          if (Array.isArray(m.departments) && m.departments.length > 0) {
+            return m.departments.includes(teamFilterDept);
+          }
+          return m.department === teamFilterDept;
+        });
 
        newVisible.forEach((item, idx) => {
 
@@ -1080,7 +1092,13 @@ export const AdminDashboard: React.FC = () => {
 
     // Filter list logic
 
-    const filteredList = teamMembers.filter(m => teamFilterDept === 'all' || m.department === teamFilterDept);
+    const filteredList = teamMembers.filter(m => {
+      if (teamFilterDept === 'all') return true;
+      if (Array.isArray(m.departments) && m.departments.length > 0) {
+        return m.departments.includes(teamFilterDept);
+      }
+      return m.department === teamFilterDept;
+    });
 
     
 
@@ -1100,7 +1118,7 @@ export const AdminDashboard: React.FC = () => {
 
     // Merge back
 
-    const otherItems = teamMembers.filter(m => !(teamFilterDept === 'all' || m.department === teamFilterDept));
+    const otherItems = teamMembers.filter(m => !filteredList.some(f => f.id === m.id));
 
     const newFullList = [...otherItems, ...updatedFiltered];
 
@@ -1625,17 +1643,14 @@ export const AdminDashboard: React.FC = () => {
 
     e.preventDefault();
 
-    if (!newTeamMember.name || !newTeamMember.department) return;
+    const primaryDept = newTeamMember.department || (newTeamMember.departments && newTeamMember.departments[0]) || '';
+    if (!newTeamMember.name || !primaryDept) return;
 
     setLoading(true);
-
-
 
     try {
 
       let imageUrl = "https://placehold.co/400x400";
-
-      
 
       if (fileToUpload) {
 
@@ -1659,21 +1674,15 @@ export const AdminDashboard: React.FC = () => {
 
       }
 
-
-
       const detailsArray = teamDetailsStr.split('\n').filter(line => line.trim() !== '');
 
       const detailsEnArray = teamDetailsEnStr.split('\n').filter(line => line.trim() !== '');
 
-
-
       // Determine order: if new, put at end of its dept list
 
-      const deptMembers = teamMembers.filter(m => m.department === newTeamMember.department);
+      const deptMembers = teamMembers.filter(m => m.department === primaryDept);
 
       const nextOrder = newTeamMember.id ? (newTeamMember.order ?? 999) : deptMembers.length;
-
-
 
       const teamPayload = {
 
@@ -1681,7 +1690,9 @@ export const AdminDashboard: React.FC = () => {
 
         nameEn: newTeamMember.nameEn || newTeamMember.name || '',
 
-        department: newTeamMember.department || '',
+        department: primaryDept,
+
+        departments: newTeamMember.departments || (newTeamMember.department ? [newTeamMember.department] : [primaryDept]),
 
         role: newTeamMember.role || '',
 
@@ -3877,7 +3888,13 @@ export const AdminDashboard: React.FC = () => {
 
                      <div className="ml-auto text-sm text-gray-500 dark:text-gray-400 font-bold">
 
-                        Всього: {teamMembers.filter(m => teamFilterDept === 'all' || m.department === teamFilterDept).length}
+                        Всього: {teamMembers.filter(m => {
+                           if (teamFilterDept === 'all') return true;
+                           if (Array.isArray(m.departments) && m.departments.length > 0) {
+                             return m.departments.includes(teamFilterDept);
+                           }
+                           return m.department === teamFilterDept;
+                         }).length}
 
                      </div>
 
@@ -4011,9 +4028,43 @@ export const AdminDashboard: React.FC = () => {
 
                               <div>
 
-                                 <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Департамент</label>
+                                 <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase block mb-1">Департаменти (можна обрати декілька)</label>
 
-                                 <select 
+                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 border dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-800/40 mt-2">
+                                    {departments.map(dept => {
+                                       const isChecked = Array.isArray(newTeamMember.departments) 
+                                          ? newTeamMember.departments.includes(dept.id)
+                                          : newTeamMember.department === dept.id;
+                                       return (
+                                          <label key={dept.id} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none">
+                                             <input 
+                                                type="checkbox"
+                                                checked={isChecked}
+                                                onChange={e => {
+                                                   const currentDepts = Array.isArray(newTeamMember.departments)
+                                                      ? newTeamMember.departments
+                                                      : (newTeamMember.department ? [newTeamMember.department] : []);
+                                                   let updatedDepts: string[];
+                                                   if (e.target.checked) {
+                                                      updatedDepts = [...new Set([...currentDepts, dept.id])];
+                                                   } else {
+                                                      updatedDepts = currentDepts.filter(id => id !== dept.id);
+                                                   }
+                                                   setNewTeamMember({
+                                                      ...newTeamMember,
+                                                      departments: updatedDepts,
+                                                      department: updatedDepts[0] || ''
+                                                   });
+                                                }}
+                                                className="rounded text-kmmr-blue focus:ring-kmmr-blue border-gray-300 dark:border-gray-600"
+                                             />
+                                             <span>{dept.name}</span>
+                                          </label>
+                                       );
+                                    })}
+                                 </div>
+
+                                 <select style={{ display: 'none' }} 
 
                                    className="border dark:border-gray-700 p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:placeholder-gray-500" 
 
@@ -4103,11 +4154,19 @@ export const AdminDashboard: React.FC = () => {
 
                     {teamMembers
 
-                      .filter(m => teamFilterDept === 'all' || m.department === teamFilterDept)
+                      .filter(m => {
+                        if (teamFilterDept === 'all') return true;
+                        if (Array.isArray(m.departments) && m.departments.length > 0) {
+                          return m.departments.includes(teamFilterDept);
+                        }
+                        return m.department === teamFilterDept;
+                      })
 
                       .map((member, index) => {
 
-                         const deptName = departments.find(d => d.id === member.department)?.name || member.department;
+                         const deptName = Array.isArray(member.departments) && member.departments.length > 0
+                           ? member.departments.map(id => departments.find(d => d.id === id)?.name || id).join(', ')
+                           : (departments.find(d => d.id === member.department)?.name || member.department);
 
                          
 
