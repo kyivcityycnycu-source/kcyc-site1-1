@@ -1,14 +1,16 @@
 import React from 'react';
 import { X, User, Phone, Mail, MessageSquare } from 'lucide-react';
 import { Modal } from './ui/Modal';
+import { Department } from '../types';
 
 interface ApplicationDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   application: any;
+  departments?: Department[];
 }
 
-export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({ isOpen, onClose, application }) => {
+export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({ isOpen, onClose, application, departments }) => {
   if (!application) return null;
 
   const fieldLabels: Record<string, string> = {
@@ -26,6 +28,23 @@ export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = (
     projectTitle: 'Назва проєкту',
     university: 'Навчальний заклад',
     specialization: 'Спеціальність',
+  };
+
+  const getDepartmentName = (id: string) => {
+    if (departments) {
+      const dept = departments.find(d => d.id === id);
+      if (dept) return dept.name;
+    }
+    
+    const legacyMap: Record<string, string> = {
+      secretariat: 'Секретаріат',
+      smm: 'SMM-департамент',
+      projects: 'Департамент проєктів',
+      fundraising: 'Департамент фандрейзингу',
+      pr: 'PR-департамент',
+    };
+    
+    return legacyMap[id] || id;
   };
 
   const getMainDetails = () => {
@@ -64,7 +83,11 @@ export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = (
     
     Object.entries(application).forEach(([key, value]) => {
       if (!skipKeys.includes(key) && value) {
-        extra.push([fieldLabels[key] || key, value]);
+        let displayValue = value;
+        if (key === 'department') {
+          displayValue = getDepartmentName(String(value));
+        }
+        extra.push([fieldLabels[key] || key, displayValue]);
       }
     });
 
@@ -102,18 +125,18 @@ export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = (
                   <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-kmmr-blue dark:text-blue-400 flex-shrink-0">
                     <User size={20} />
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold">Ім'я / Представник</p>
-                    <p className="text-gray-900 dark:text-white font-bold font-montserrat">{displayName}</p>
+                    <p className="text-gray-900 dark:text-white font-bold font-montserrat break-words">{displayName}</p>
                   </div>
                </div>
                <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-kmmr-blue dark:text-blue-400 flex-shrink-0">
                     <Mail size={20} />
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold">Email</p>
-                    <p className="text-gray-900 dark:text-white font-bold font-montserrat">{displayEmail}</p>
+                    <p className="text-gray-900 dark:text-white font-bold font-montserrat break-all">{displayEmail}</p>
                   </div>
                </div>
             </div>
@@ -122,9 +145,9 @@ export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = (
                   <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-kmmr-blue dark:text-blue-400 flex-shrink-0">
                     <Phone size={20} />
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold">Телефон</p>
-                    <p className="text-gray-900 dark:text-white font-bold font-montserrat">{displayPhone}</p>
+                    <p className="text-gray-900 dark:text-white font-bold font-montserrat break-words">{displayPhone}</p>
                   </div>
                </div>
                {displaySocial && (
@@ -132,9 +155,9 @@ export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = (
                     <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-kmmr-blue dark:text-blue-400 flex-shrink-0">
                       <MessageSquare size={20} />
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold">Соціальні мережі / Тег</p>
-                      <p className="text-gray-900 dark:text-white font-bold font-montserrat">{displaySocial}</p>
+                      <p className="text-gray-900 dark:text-white font-bold font-montserrat break-all">{displaySocial}</p>
                     </div>
                  </div>
                )}
@@ -152,7 +175,7 @@ export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = (
                 {extraDetails.map(([key, value]) => (
                   <div key={key} className="pb-4 border-b border-gray-200 dark:border-gray-600 last:border-0 last:pb-0">
                     <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">{key}</p>
-                    <p className="text-gray-800 dark:text-gray-200 font-medium whitespace-pre-wrap">{String(value)}</p>
+                    <p className="text-gray-800 dark:text-gray-200 font-medium whitespace-pre-wrap break-words">{String(value)}</p>
                   </div>
                 ))}
               </div>
