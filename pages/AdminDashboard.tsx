@@ -1255,7 +1255,7 @@ export const AdminDashboard: React.FC = () => {
 
   // --- EXPORT TO CSV ---
 
-  const downloadExcel = () => {
+  const downloadExcel = async () => {
 
     const dataToExport = getFilteredSubmissions();
 
@@ -1271,76 +1271,12 @@ export const AdminDashboard: React.FC = () => {
 
 
 
-    const convertToCSV = (objArray: any[]) => {
-
-      const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
-
-      let str = '';
-
-      const headers = Object.keys(array[0]);
-
-      str += headers.join(',') + '\r\n';
-
-      
-
-      for (let i = 0; i < array.length; i++) {
-
-        let line = '';
-
-        for (let index in array[i]) {
-
-          if (line !== '') line += ',';
-
-          let value = array[i][index];
-
-          if (value === null || value === undefined) value = '';
-
-          value = value.toString().replace(/"/g, '""');
-
-          if (value.search(/("|,|\n)/g) >= 0) {
-
-            value = `"${value}"`;
-
-          }
-
-          line += value;
-
-        }
-
-        str += line + '\r\n';
-
-      }
-
-      return str;
-
-    };
-
-
-
-    const downloadCSV = (csv: string, filename: string) => {
-
-      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-
-      const link = document.createElement('a');
-
-      if (link.download !== undefined) {
-
-        const url = URL.createObjectURL(blob);
-
-        link.setAttribute('href', url);
-
-        link.setAttribute('download', filename);
-
-        link.style.visibility = 'hidden';
-
-        document.body.appendChild(link);
-
-        link.click();
-
-        document.body.removeChild(link);
-
-      }
-
+    const exportToExcelFile = async (formattedData: any[], sheetName: string, fileName: string) => {
+      const XLSX = await import('xlsx');
+      const worksheet = XLSX.utils.json_to_sheet(formattedData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+      XLSX.writeFile(workbook, fileName);
     };
 
 
@@ -1363,10 +1299,7 @@ export const AdminDashboard: React.FC = () => {
 
       
 
-      const csv = convertToCSV(formattedData);
-
-      downloadCSV(csv, `Newsletter_Export_${new Date().toISOString().split('T')[0]}.csv`);
-
+      await exportToExcelFile(formattedData, "Newsletter", `Newsletter_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
       return;
 
     }
@@ -1445,15 +1378,13 @@ export const AdminDashboard: React.FC = () => {
 
 
 
-    const csv = convertToCSV(formattedData);
-
     const fileName = selectedDynamicFilter !== 'all' 
 
-      ? `Export_${selectedDynamicFilter.substring(0, 20)}_${new Date().toISOString().split('T')[0]}.csv`
+      ? `Export_${selectedDynamicFilter.substring(0, 20)}_${new Date().toISOString().split('T')[0]}.xlsx`
 
-      : `Export_All_${new Date().toISOString().split('T')[0]}.csv`;
+      : `Export_All_${new Date().toISOString().split('T')[0]}.xlsx`;
 
-    downloadCSV(csv, fileName);
+    await exportToExcelFile(formattedData, "Заявки", fileName);
 
   };
 
@@ -2366,7 +2297,7 @@ export const AdminDashboard: React.FC = () => {
 
                  <button onClick={downloadExcel} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-bold text-sm transition-colors shadow-sm">
 
-                    <Download size={16} /> <span className="hidden sm:inline">Експорт (CSV)</span>
+                    <Download size={16} /> <span className="hidden sm:inline">Експорт (Excel)</span>
 
                  </button>
 
