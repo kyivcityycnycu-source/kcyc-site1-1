@@ -166,7 +166,7 @@ export const translations = {
       copied: 'Скопійовано!',
       bankJar: 'Банка',
       card: 'Картка',
-      officialDetails: 'Офіційні реквізити ГО "Київська Міська Молодіжна Рада"'
+      officialDetails: 'Офіційні реквізити "Київська Міська Молодіжна Рада"'
     },
     about: {
       stats: {
@@ -422,7 +422,7 @@ export const translations = {
       copied: 'Copied!',
       bankJar: 'Jar',
       card: 'Card',
-      officialDetails: 'Official details of NGO "Kyiv City Youth Council"'
+      officialDetails: 'Official details of "Kyiv City Youth Council"'
     },
     about: {
       stats: {
