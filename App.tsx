@@ -17,7 +17,11 @@ import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SEO } from './components/SEO';
+import { CookieConsent } from './components/CookieConsent';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
+import { NotFound } from './pages/NotFound';
 import { initGA, trackPageView } from './services/analytics';
+import { COOKIE_CONSENT_EVENT, hasAnalyticsConsent } from './lib/cookieConsent';
 
 // Component to scroll to top on route change and track page views
 const AnalyticsTracker = () => {
@@ -25,13 +29,22 @@ const AnalyticsTracker = () => {
   const prevPathname = React.useRef(pathname);
   
   useEffect(() => {
-    // Initialize GA only once
-    initGA();
+    // GA only after cookie consent
+    if (hasAnalyticsConsent()) {
+      initGA();
+    }
+
+    const onConsent = () => {
+      if (hasAnalyticsConsent()) initGA();
+    };
+    window.addEventListener(COOKIE_CONSENT_EVENT, onConsent);
     
     // Set scroll restoration to manual to handle it ourselves
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
+
+    return () => window.removeEventListener(COOKIE_CONSENT_EVENT, onConsent);
   }, []);
 
   React.useLayoutEffect(() => {
@@ -93,6 +106,7 @@ const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       {children}
     </main>
     <Footer />
+    <CookieConsent />
   </div>
 );
 
@@ -133,6 +147,7 @@ const AppContent = () => {
         <Route path="/documents" element={<PublicLayout><DocumentsSection /></PublicLayout>} />
         <Route path="/contacts" element={<PublicLayout><ContactsSection /></PublicLayout>} />
         <Route path="/support" element={<PublicLayout><SupportSection /></PublicLayout>} />
+        <Route path="/privacy" element={<PublicLayout><PrivacyPolicy /></PublicLayout>} />
         
         {/* 
           Direct access routes: 
@@ -142,6 +157,8 @@ const AppContent = () => {
         <Route path="/team/:id" element={<PublicLayout><TeamSection /></PublicLayout>} />
         <Route path="/projects/:id" element={<PublicLayout><ProjectsSection /></PublicLayout>} />
         <Route path="/opportunities/:id" element={<PublicLayout><OpportunitiesSection /></PublicLayout>} />
+
+        <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
       </Routes>
 
       {/* 

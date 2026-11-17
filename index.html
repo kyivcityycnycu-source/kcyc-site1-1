@@ -8,10 +8,8 @@
     
     <!-- Основні SEO теги -->
     <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
+    <!-- Preload only LCP hero image (other photos load lazily) -->
     <link rel="preload" as="image" href="https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/Photo%2F195162.jpg?alt=media&token=fc7b25f9-61d7-45f4-a1df-fc14a30051d9" />
-    <link rel="preload" as="image" href="https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/Photo%2FDSC_9715.JPG?alt=media&token=d947bb30-20a5-4178-9f96-568475530815" />
-    <link rel="preload" as="image" href="https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/Photo%2F1228.jpg?alt=media&token=1f7262b0-63d9-447c-bc0d-1dab5fd1e5b6" />
-    <link rel="preload" as="image" href="https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/Photo%2FIMG_7089.JPG?alt=media&token=48bdd686-39fb-48c4-a5de-c9c9ae29f51f" />
     <meta name="description" content="Київська Міська Молодіжна Рада (КММР) — Найбільше молодіжне обʼєднання Києва. Платформа для консолідованої взаємодії учасників молодіжної політики міста Київ, з метою спільної роботи над розвитком молодіжної сфери та формування активної всебічно розвиненої молодої особистості." />
     <meta name="keywords" content="КММР, Київська Міська Молодіжна Рада, молодь Києва, молодіжна політика, громадські організації, молодіжні ініціативи" />
     <meta name="author" content="Київська Міська Молодіжна Рада" />
@@ -22,17 +20,17 @@
     <meta property="og:url" content="https://kmmr.org/" />
     <meta property="og:title" content="Київська Міська Молодіжна Рада | КММР" />
     <meta property="og:description" content="Офіційний сайт Київської Міської Молодіжної Ради. Ми об'єднуємо активну молодь для створення кращого майбутнього нашого міста." />
-    <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2FGroup%206680%20(1).png?alt=media&token=a82c8a88-8e02-40ba-9bcc-9126138fe47e" />
+    <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/LOGO%20KCYC%2FFrame%201015.png?alt=media&token=20a95cbe-9e20-4477-a15d-56c2dfab5760" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://kmmr.org/" />
     <meta property="twitter:title" content="Київська Міська Молодіжна Рада | КММР" />
     <meta property="twitter:description" content="Офіційний сайт Київської Міської Молодіжної Ради. Ми об'єднуємо активну молодь для створення кращого майбутнього нашого міста." />
-    <meta property="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2FGroup%206680%20(1).png?alt=media&token=a82c8a88-8e02-40ba-9bcc-9126138fe47e" />
+    <meta property="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/LOGO%20KCYC%2FFrame%201015.png?alt=media&token=20a95cbe-9e20-4477-a15d-56c2dfab5760" />
     
     <!-- Dynamic Favicon Link -->
-    <link id="dynamic-favicon" rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2FGroup%206680%20(1).png?alt=media&token=a82c8a88-8e02-40ba-9bcc-9126138fe47e" />
+    <link id="dynamic-favicon" rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/LOGO%20KCYC%2FFrame%201015.png?alt=media&token=20a95cbe-9e20-4477-a15d-56c2dfab5760" />
 
     <!-- Favicon Logic -->
     <script>
@@ -79,12 +77,20 @@
                 brown: '#6D351A',
                 mint: '#BBFFE4'
               }
+            },
+            borderRadius: {
+              /* Inputs, cards, panels — один середній радіус */
+              surface: '12px'
             }
           }
         }
       }
     </script>
     <style>
+      :root {
+        --kmmr-radius-pill: 9999px;
+        --kmmr-radius-surface: 12px;
+      }
       html, body {
         font-family: 'Montserrat', sans-serif;
         background-color: #031B47;
@@ -130,6 +136,30 @@
       .dark .animate-shimmer {
         background: linear-gradient(to right, #1f2937 8%, #374151 18%, #1f2937 33%);
         background-size: 800px 104px;
+      }
+
+      /* Keyboard focus for interactive elements */
+      a:focus-visible,
+      button:focus-visible,
+      [role="button"]:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 2px solid #D7269B;
+        outline-offset: 2px;
+      }
+
+      /* Visually hidden but available to screen readers */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
       }
     </style>
   </head>

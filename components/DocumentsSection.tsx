@@ -5,6 +5,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { onSnapshot, query, collection } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { DocumentItem } from '../types';
+import { EmptyState } from './ui/SectionSkeleton';
+import { formatDisplayDate } from '../lib/dateDisplay';
 
 export const DocumentsSection: React.FC = () => {
   const { language, t } = useLanguage();
@@ -77,6 +79,8 @@ export const DocumentsSection: React.FC = () => {
             <div className="flex justify-center py-12">
               <Loader2 className="animate-spin text-kmmr-blue dark:text-blue-400 w-10 h-10" />
             </div>
+          ) : documents.length === 0 ? (
+            <EmptyState title={t('documents.emptyTitle')} description={t('documents.emptyDesc')} />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {documents.map((doc, idx) => (
@@ -100,7 +104,7 @@ export const DocumentsSection: React.FC = () => {
                       </h3>
                       <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-4 flex-wrap">
                         <span className="font-semibold bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded text-gray-600 dark:text-gray-300">{doc.type}</span>
-                        <span>{doc.date}</span>
+                        <span>{formatDisplayDate(doc.date, language)}</span>
                         {doc.size && <span>{doc.size}</span>}
                       </div>
                       

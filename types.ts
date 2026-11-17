@@ -27,6 +27,8 @@ export interface Department {
   icon: any; // Can be LucideIcon (legacy/static) or string (URL from DB)
   color: string; // Tailwind class (legacy) or Hex Code (dynamic)
   order?: number; // Sorting order
+  /** When false, department is hidden from join form (full / recruitment closed). Default: open. */
+  recruitmentOpen?: boolean;
 }
 
 export type FormFieldType = 'text' | 'textarea' | 'social' | 'select' | 'checkbox';

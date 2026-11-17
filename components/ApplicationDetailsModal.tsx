@@ -71,7 +71,7 @@ export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = (
       displayEmail: application.email,
       displayPhone: application.phone,
       displaySocial: application.socialTag,
-      displayTitle: application.opportunityTitle || (application.formType === 'general_contact' ? 'Загальний запит' : 'Заявка')
+      displayTitle: application.opportunityTitle || (application.formType === 'general_contact' ? 'Загальний запит' : application.formType === 'participant_google_form' ? 'Учасник (Google Form)' : 'Заявка')
     };
   };
 
@@ -79,7 +79,7 @@ export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = (
 
   const getExtraDetails = () => {
     const extra: [string, any][] = [];
-    const skipKeys = ['id', 'name', 'email', 'phone', 'socialTag', 'opportunityTitle', 'opportunityId', 'type', 'formType', 'status', 'createdAt', 'repName', 'commTag', 'projectTitle', 'answers'];
+    const skipKeys = ['id', 'name', 'email', 'phone', 'socialTag', 'opportunityTitle', 'opportunityId', 'type', 'formType', 'status', 'createdAt', 'repName', 'commTag', 'projectTitle', 'answers', 'source'];
     
     Object.entries(application).forEach(([key, value]) => {
       if (!skipKeys.includes(key) && value) {

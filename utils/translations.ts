@@ -52,10 +52,14 @@ export const translations = {
     },
     contacts: {
       title: 'Приєднуйся до команди КММР',
-      subtitle: 'Заповни форму, щоб долучитися до команди та змінювати Київ разом з нами.',
+      subtitle: 'Заповни анкету учасника — ми отримаємо заявку й звʼяжемося з тобою.',
+      googleFormHint: 'Натисни кнопку — відкриється анкета Google Form. Заповни її, і ми звʼяжемося з тобою.',
+      openGoogleForm: 'Заповнити анкету',
       successTitle: 'Заявку відправлено!',
       successDesc: "Дякуємо за твою ініціативу. Наш HR-відділ отримав твої дані і зв'яжеться з тобою найближчим часом.",
+      successWait: 'Очікуйте відповіді — ми напишемо вам.',
       retryBtn: 'Відправити ще одну заявку',
+      closedHint: 'Набір тимчасово закрито',
       labels: {
         name: "Ім'я та Прізвище",
         phone: 'Телефон',
@@ -67,12 +71,19 @@ export const translations = {
       placeholders: {
         name: 'Іван Іваненко',
         dept: 'Оберіть напрямок...',
+        deptClosedAll: 'Наразі набір до всіх відділів закрито',
         motivation: 'Чому ти хочеш долучитися до КММР?'
       },
       submit: 'Відправити',
       consent: 'Натискаючи кнопку "Відправити", ви даєте згоду на обробку персональних даних.',
+      privacyLink: 'Політика конфіденційності',
       loading: 'Відправка...',
-      error: 'Виникла помилка при відправці. Спробуйте пізніше.'
+      error: 'Виникла помилка при відправці. Спробуйте пізніше.',
+      rateLimit: 'Забагато спроб з цього пристрою. Зачекайте 15 хвилин і спробуйте знову.',
+      tooFast: 'Зачекайте кілька секунд і надішліть форму ще раз.',
+      invalidEmail: 'Введіть коректну email-адресу',
+      invalidPhone: 'Введіть повний номер: +380 XX XXX XX XX',
+      phonePlaceholder: '+380 67 123 45 67'
     },
     support: {
       title: 'Підтримка Громадських Ініціатив',
@@ -147,11 +158,13 @@ export const translations = {
       inputPlaceholder: 'Твій Email',
       contacts: 'Контакти',
       news: 'Новини',
-      newsDesc: 'Будь в курсі найсвіжіших можливостей.',
+      newsDesc: 'Будь у курсі найсвіжіших можливостей.',
       follow: 'Слідкуй',
       desc: 'Найбільше молодіжне обʼєднання Києва. Відокремлений підрозділ Національної Молодіжної Ради України.',
       rights: 'Всі права захищені.',
-      memberOf: 'Частина Національної Молодіжної Ради України'
+      memberOf: 'Частина Національної Молодіжної Ради України',
+      privacy: 'Політика конфіденційності',
+      newsConsent: 'Натискаючи «Підписатися», ви даєте згоду на обробку персональних даних.'
     },
     donation: {
       btn: 'Підтримати КММР',
@@ -180,7 +193,7 @@ export const translations = {
       who: {
         tag: 'Хто ми є',
         title: 'Київська Міська Молодіжна Рада',
-        p1: 'Київська Міська Молодіжна Рада (КММР) – це самоврядна молодіжна інституція міського рівня, що працює на громадських засадах.',
+        p1: 'Київська міська молодіжна рада (КММР) – це самоврядна молодіжна інституція міського рівня, що працює на громадських засадах.',
         p2: 'Ми залучаємо молодь до формування політики в Києві та виступаємо стабільним голосом молодих людей у місті.',
         p3: 'Наша місія — створити умови, де кожен молодий киянин може реалізувати свій потенціал. КММР відома в місті платформою, до якої прагнуть долучатися молоді люди, а також базою практики для студентів – з 2021 року тут пройшли стажування близько 70 інтернів.'
       },
@@ -216,7 +229,9 @@ export const translations = {
       desc: 'Ініціативи, які вже змінюють Київ.',
       details: 'Деталі',
       insta: 'Дивитись в Instagram',
-      viewAll: 'Всі проєкти'
+      viewAll: 'Всі проєкти',
+      emptyTitle: 'Проєктів поки немає',
+      emptyDesc: 'Нові ініціативи з’являться тут незабаром.'
     },
     opportunities: {
       tag: 'Розвиток',
@@ -228,7 +243,10 @@ export const translations = {
         job: 'Робота'
       },
       deadline: 'Дедлайн',
-      apply: 'Подати заявку'
+      apply: 'Подати заявку',
+      emptyTitle: 'Зараз немає відкритих можливостей',
+      emptyDesc: 'Загляньте пізніше або напишіть нам через форму «Приєднатися».',
+      ongoing: 'Постійний набір'
     },
     documents: {
       tag: 'Відкритість та прозорість',
@@ -237,7 +255,9 @@ export const translations = {
       download: 'Завантажити',
       other: 'Потрібен інший документ?',
       otherDesc: 'Відправте офіційний запит до секретаріату.',
-      request: 'Відправити запит'
+      request: 'Відправити запит',
+      emptyTitle: 'Документів поки немає',
+      emptyDesc: 'Офіційні файли з’являться тут незабаром.'
     },
     application: {
       title: 'Подача заявки',
@@ -265,7 +285,7 @@ export const translations = {
       tag: 'Voice of Kyiv Youth',
       titleStart: 'Change',
       titleMid: 'Yourself',
-      titleEnd: 'World',
+      titleEnd: 'the World',
       subtitle: 'We are the largest youth association in Kyiv. A platform for consolidated interaction of youth policy participants in the city of Kyiv, with the aim of joint work on the development of the youth sphere and the formation of an active, comprehensively developed young personality.',
       btnJoin: 'Join Us',
       btnProjects: 'Our Projects',
@@ -308,10 +328,14 @@ export const translations = {
     },
     contacts: {
       title: 'Join the KMMR Team',
-      subtitle: 'Fill out the form to join the team and change Kyiv with us.',
+      subtitle: 'Fill out the participant form — we will receive your application and get in touch.',
+      googleFormHint: 'Click the button to open the Google Form. Fill it in, and we will get back to you.',
+      openGoogleForm: 'Fill out the form',
       successTitle: 'Application Sent!',
       successDesc: 'Thank you for your initiative. Our HR department has received your data and will contact you shortly.',
+      successWait: 'Please wait for a reply — we will get back to you.',
       retryBtn: 'Send Another Application',
+      closedHint: 'Recruitment temporarily closed',
       labels: {
         name: 'Full Name',
         phone: 'Phone',
@@ -323,12 +347,19 @@ export const translations = {
       placeholders: {
         name: 'John Doe',
         dept: 'Choose direction...',
+        deptClosedAll: 'Recruitment is currently closed for all departments',
         motivation: 'Why do you want to join KMMR?'
       },
       submit: 'Send Application',
       consent: 'By clicking "Submit", you agree to the processing of personal data.',
+      privacyLink: 'Privacy policy',
       loading: 'Sending...',
-      error: 'An error occurred. Please try again later.'
+      error: 'An error occurred. Please try again later.',
+      rateLimit: 'Too many attempts from this device. Please wait 15 minutes and try again.',
+      tooFast: 'Please wait a few seconds and submit the form again.',
+      invalidEmail: 'Enter a valid email address',
+      invalidPhone: 'Enter a full number: +380 XX XXX XX XX',
+      phonePlaceholder: '+380 67 123 45 67'
     },
     support: {
       title: 'Support for Public Initiatives',
@@ -407,7 +438,9 @@ export const translations = {
       follow: 'Follow Us',
       desc: 'The largest youth association in Kyiv. A separate subdivision of the National Youth Council of Ukraine.',
       rights: 'All rights reserved.',
-      memberOf: 'Part of the National Youth Council of Ukraine'
+      memberOf: 'Part of the National Youth Council of Ukraine',
+      privacy: 'Privacy policy',
+      newsConsent: 'By clicking Subscribe, you agree to the processing of personal data.'
     },
     donation: {
       btn: 'Support KCYC',
@@ -472,7 +505,9 @@ export const translations = {
       desc: 'Initiatives that are already changing Kyiv.',
       details: 'Details',
       insta: 'View on Instagram',
-      viewAll: 'All Projects'
+      viewAll: 'All Projects',
+      emptyTitle: 'No projects yet',
+      emptyDesc: 'New initiatives will appear here soon.'
     },
     opportunities: {
       tag: 'Development',
@@ -484,7 +519,10 @@ export const translations = {
         job: 'Job'
       },
       deadline: 'Deadline',
-      apply: 'Apply'
+      apply: 'Apply',
+      emptyTitle: 'No open opportunities right now',
+      emptyDesc: 'Check back later or reach out via the Join form.',
+      ongoing: 'Open recruitment'
     },
     documents: {
       tag: 'Openness & Transparency',
@@ -493,7 +531,9 @@ export const translations = {
       download: 'Download',
       other: 'Need another document?',
       otherDesc: 'Send an official request to the secretariat.',
-      request: 'Send Request'
+      request: 'Send Request',
+      emptyTitle: 'No documents yet',
+      emptyDesc: 'Official files will appear here soon.'
     },
     application: {
       title: 'Application for',

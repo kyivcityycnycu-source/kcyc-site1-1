@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Building2, Handshake, UserPlus, ChevronRight, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
+import { PARTICIPANT_JOIN_FORM_URL } from '../constants';
+import { trackCtaClick } from '../services/analytics';
 
 export const JoinUsSection: React.FC = () => {
   const { t } = useLanguage();
@@ -46,12 +48,11 @@ export const JoinUsSection: React.FC = () => {
       icon: UserPlus,
       color: 'bg-[#D81B94]',
       items: [
-        { 
-          text: t('joinUs.volunteer.fillForm'), 
-          action: () => {
-            const el = document.getElementById('contacts');
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-          }
+        {
+          text: t('joinUs.volunteer.fillForm'),
+          link: PARTICIPANT_JOIN_FORM_URL,
+          linkText: t('joinUs.volunteer.formLink'),
+          onLinkClick: () => trackCtaClick('join', 'join_us'),
         },
         { text: t('joinUs.volunteer.readProposal'), link: '/opportunities', linkText: t('joinUs.volunteer.proposalLink') }
       ]
@@ -101,6 +102,7 @@ export const JoinUsSection: React.FC = () => {
                                       href={item.link} 
                                       target={item.link?.startsWith('http') ? "_blank" : "_self"}
                                       rel={item.link?.startsWith('http') ? "noopener noreferrer" : ""}
+                                      onClick={'onLinkClick' in item ? item.onLinkClick : undefined}
                                       className="text-kmmr-blue dark:text-blue-400 font-bold underline decoration-2 underline-offset-4 hover:text-kmmr-pink transition-colors inline-flex items-center gap-1"
                                     >
                                       {item.linkText}

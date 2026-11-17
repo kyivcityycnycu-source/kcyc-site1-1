@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { OPPORTUNITIES_UK, OPPORTUNITIES_EN, PROJECTS_UK, PROJECTS_EN } from '../constants';
-import { Clock, Loader2, CalendarOff } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { query, collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
@@ -8,6 +8,9 @@ import { Opportunity, Project } from '../types';
 import { ApplicationModal } from './ApplicationModal';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { preloadImageUrls } from '../lib/preload';
+import { EmptyState, CardSkeleton } from './ui/SectionSkeleton';
+import { formatDisplayDate } from '../lib/dateDisplay';
+import { trackOpportunityApply } from '../services/analytics';
 
 interface OpportunitiesSectionProps {
   onlyModal?: boolean;
@@ -181,21 +184,35 @@ export const OpportunitiesSection: React.FC<OpportunitiesSectionProps> = ({ only
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="animate-spin text-kmmr-blue dark:text-blue-400 w-10 h-10" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <CardSkeleton key={i} aspect="aspect-[4/3]" />
+            ))}
           </div>
+        ) : opportunities.length === 0 ? (
+          <EmptyState title={t('opportunities.emptyTitle')} description={t('opportunities.emptyDesc')} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {opportunities.map((opp) => (
               <div 
                 key={opp.id} 
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    navigate(`/opportunities/${opp.id}`, { 
+                      state: { backgroundLocation: location, fromHome: location.pathname === '/' } 
+                    });
+                  }
+                }}
                 onClick={() => navigate(`/opportunities/${opp.id}`, { 
                   state: { 
                     backgroundLocation: location,
                     fromHome: location.pathname === '/' 
                   } 
                 })}
-                className="border border-gray-100 dark:border-gray-700 rounded-2xl p-6 hover:border-kmmr-pink/30 hover:shadow-lg transition-all duration-300 group bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 animate-fade-in-up flex flex-col cursor-pointer"
+                className="border border-gray-100 dark:border-gray-700 rounded-2xl p-6 hover:border-kmmr-pink/30 hover:shadow-lg transition-all duration-300 group bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 animate-fade-in-up flex flex-col cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kmmr-pink"
               >
                 <div className="flex justify-between items-start mb-4">
                   <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
@@ -209,12 +226,12 @@ export const OpportunitiesSection: React.FC<OpportunitiesSectionProps> = ({ only
                     {opp.deadline ? (
                       <>
                         <Clock size={12} />
-                        <span>{new Date(opp.deadline).toLocaleDateString('uk-UA')}</span>
+                        <span>{formatDisplayDate(opp.deadline, language)}</span>
                       </>
                     ) : (
                       <>
                         <Clock size={12} />
-                        <span>Постійний набір</span>
+                        <span>{t('opportunities.ongoing')}</span>
                       </>
                     )}
                   </div>
@@ -224,8 +241,10 @@ export const OpportunitiesSection: React.FC<OpportunitiesSectionProps> = ({ only
                 <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 line-clamp-3 flex-grow">{opp.description}</p>
                 
                 <button 
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
+                    trackOpportunityApply('list');
                     if (opp.googleFormLink) {
                       window.open(opp.googleFormLink, '_blank');
                     } else {
@@ -237,7 +256,7 @@ export const OpportunitiesSection: React.FC<OpportunitiesSectionProps> = ({ only
                       });
                     }
                   }}
-                  className="text-sm font-bold text-kmmr-blue dark:text-blue-400 border-b-2 border-transparent group-hover:border-kmmr-pink transition-all self-start"
+                  className="text-sm font-bold text-kmmr-blue dark:text-blue-400 border-b-2 border-transparent group-hover:border-kmmr-pink transition-all self-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kmmr-pink"
                 >
                   {t('opportunities.apply')}
                 </button>

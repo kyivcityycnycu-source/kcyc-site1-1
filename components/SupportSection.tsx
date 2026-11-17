@@ -1,8 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { Send, Loader2, CheckCircle, AlertCircle, Handshake } from 'lucide-react';
-import { submitSupportForm, SupportFormData } from '../services/api';
+import { submitSupportForm, SupportFormData, isFormSpamError } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
+import { HoneypotField } from './ui/HoneypotField';
+import { FIELD_MAX, ensureUaPhonePrefix, isValidEmail, isValidPhone, sanitizeFormValue } from '../lib/validation';
+import { ui } from '../lib/uiClasses';
+import { trackFormSubmit } from '../services/analytics';
 
 export const SupportSection: React.FC = () => {
   const { t } = useLanguage();
@@ -19,29 +24,60 @@ export const SupportSection: React.FC = () => {
     description: '',
     supportType: ''
   });
+  const [honeypot, setHoneypot] = useState('');
+  const openedAt = useRef(Date.now());
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; phone?: string }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
+
+    const nextFields: { email?: string; phone?: string } = {};
+    if (!isValidEmail(formData.email)) nextFields.email = t('contacts.invalidEmail');
+    if (!isValidPhone(formData.phone)) nextFields.phone = t('contacts.invalidPhone');
+    setFieldErrors(nextFields);
+    if (Object.keys(nextFields).length > 0) {
+      trackFormSubmit('support_initiative', 'validation_error');
+      return;
+    }
+
     setStatus('loading');
 
     try {
-      await submitSupportForm(formData);
+      await submitSupportForm(formData, { honeypot, openedAt: openedAt.current });
       setStatus('success');
+      trackFormSubmit('support_initiative', 'success');
       setFormData({ 
         orgName: '', repName: '', phone: '', email: '', commTag: '', orgSocial: '', eventStartDate: '', eventEndDate: '',
         projectTitle: '', description: '', supportType: '' 
       });
+      setFieldErrors({});
+      setHoneypot('');
+      openedAt.current = Date.now();
       
       setTimeout(() => setStatus('idle'), 5000);
     } catch (error) {
       setStatus('error');
+      trackFormSubmit('support_initiative', 'error');
+      if (isFormSpamError(error) && error.code === 'rate_limit') {
+        setErrorMessage(t('contacts.rateLimit'));
+      } else if (isFormSpamError(error) && error.code === 'too_fast') {
+        setErrorMessage(t('contacts.tooFast'));
+      } else {
+        setErrorMessage(t('contacts.error'));
+      }
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: sanitizeFormValue(name, value) });
+    if (name === 'email' || name === 'phone') {
+      setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const supportOptions = [
@@ -82,13 +118,14 @@ export const SupportSection: React.FC = () => {
               </p>
               <button 
                 onClick={() => setStatus('idle')}
-                className="mt-8 bg-gray-100 dark:bg-[#1E293B] text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 px-8 py-3 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-white/5 transition-all"
+                className="mt-8 bg-gray-100 dark:bg-[#1E293B] text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 px-8 py-3 rounded-surface font-bold hover:bg-gray-200 dark:hover:bg-white/5 transition-all"
               >
                 {t('contacts.retryBtn')}
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="p-6 md:p-10 space-y-6">
+            <form onSubmit={handleSubmit} className="p-6 md:p-10 space-y-6 relative">
+              <HoneypotField value={honeypot} onChange={setHoneypot} />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -99,8 +136,9 @@ export const SupportSection: React.FC = () => {
                     value={formData.orgName}
                     onChange={handleChange}
                     required
+                    maxLength={FIELD_MAX.shortText}
                     disabled={status === 'loading'}
-                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
+                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-surface px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
                     placeholder={t('support.placeholders.orgName')}
                   />
                 </div>
@@ -112,8 +150,10 @@ export const SupportSection: React.FC = () => {
                     value={formData.repName}
                     onChange={handleChange}
                     required
+                    maxLength={FIELD_MAX.name}
+                    autoComplete="name"
                     disabled={status === 'loading'}
-                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
+                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-surface px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
                     placeholder={t('support.placeholders.repName')}
                   />
                 </div>
@@ -128,10 +168,14 @@ export const SupportSection: React.FC = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
+                    maxLength={FIELD_MAX.email}
+                    autoComplete="email"
+                    aria-invalid={!!fieldErrors.email}
                     disabled={status === 'loading'}
-                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
+                    className={`w-full bg-gray-50 dark:bg-[#1E293B] border rounded-surface px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:ring-1 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm ${fieldErrors.email ? 'border-red-400 focus:border-red-400 focus:ring-red-400/40' : 'border-gray-200 dark:border-white/10 focus:border-kmmr-green/50 focus:ring-kmmr-green/50'}`}
                     placeholder="email@example.com"
                   />
+                  {fieldErrors.email && <p className="text-xs text-red-500 ml-1">{fieldErrors.email}</p>}
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">{t('contacts.labels.phone')}</label>
@@ -140,11 +184,21 @@ export const SupportSection: React.FC = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
+                    onFocus={() => {
+                      if (!formData.phone.trim()) {
+                        setFormData((prev) => ({ ...prev, phone: ensureUaPhonePrefix('') }));
+                      }
+                    }}
                     required
+                    inputMode="tel"
+                    autoComplete="tel"
+                    maxLength={FIELD_MAX.phoneDisplay}
+                    aria-invalid={!!fieldErrors.phone}
                     disabled={status === 'loading'}
-                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
-                    placeholder="+380..."
+                    className={`w-full bg-gray-50 dark:bg-[#1E293B] border rounded-surface px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:ring-1 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm ${fieldErrors.phone ? 'border-red-400 focus:border-red-400 focus:ring-red-400/40' : 'border-gray-200 dark:border-white/10 focus:border-kmmr-green/50 focus:ring-kmmr-green/50'}`}
+                    placeholder={t('contacts.phonePlaceholder')}
                   />
+                  {fieldErrors.phone && <p className="text-xs text-red-500 ml-1">{fieldErrors.phone}</p>}
                 </div>
               </div>
 
@@ -156,8 +210,9 @@ export const SupportSection: React.FC = () => {
                     name="commTag"
                     value={formData.commTag}
                     onChange={handleChange}
+                    maxLength={FIELD_MAX.social}
                     disabled={status === 'loading'}
-                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
+                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-surface px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
                     placeholder="@username"
                   />
                 </div>
@@ -168,8 +223,9 @@ export const SupportSection: React.FC = () => {
                     name="orgSocial"
                     value={formData.orgSocial}
                     onChange={handleChange}
+                    maxLength={FIELD_MAX.url}
                     disabled={status === 'loading'}
-                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
+                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-surface px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
                     placeholder="https://instagram.com/..."
                   />
                 </div>
@@ -184,7 +240,7 @@ export const SupportSection: React.FC = () => {
                     value={formData.eventStartDate}
                     onChange={handleChange}
                     disabled={status === 'loading'}
-                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
+                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-surface px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
                   />
                 </div>
                 <div className="space-y-2">
@@ -195,7 +251,7 @@ export const SupportSection: React.FC = () => {
                     value={formData.eventEndDate}
                     onChange={handleChange}
                     disabled={status === 'loading'}
-                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
+                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-surface px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
                   />
                 </div>
               </div>
@@ -209,8 +265,9 @@ export const SupportSection: React.FC = () => {
                     value={formData.projectTitle}
                     onChange={handleChange}
                     required
+                    maxLength={FIELD_MAX.shortText}
                     disabled={status === 'loading'}
-                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
+                    className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-surface px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm"
                     placeholder={t('support.placeholders.projectTitle')}
                   />
                 </div>
@@ -223,7 +280,7 @@ export const SupportSection: React.FC = () => {
                       onChange={handleChange}
                       required
                       disabled={status === 'loading'}
-                      className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all appearance-none cursor-pointer text-sm"
+                      className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-surface px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all appearance-none cursor-pointer text-sm"
                     >
                       <option value="" className="text-gray-500 bg-white dark:bg-[#1E293B]">{t('support.placeholders.supportType')}</option>
                       {supportOptions.map(option => (
@@ -247,16 +304,17 @@ export const SupportSection: React.FC = () => {
                   onChange={handleChange}
                   rows={4}
                   required
+                  maxLength={FIELD_MAX.longText}
                   disabled={status === 'loading'}
-                  className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-xl px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm resize-none"
+                  className="w-full bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/10 rounded-surface px-5 py-4 text-gray-900 dark:text-white focus:outline-none focus:border-kmmr-green/50 focus:ring-1 focus:ring-kmmr-green/50 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-sm resize-none"
                   placeholder={t('support.placeholders.description')}
                 ></textarea>
               </div>
 
               {status === 'error' && (
-                <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/50 rounded-xl flex items-center gap-3 text-red-600 dark:text-red-400">
+                <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/50 rounded-surface flex items-center gap-3 text-red-600 dark:text-red-400">
                   <AlertCircle size={20} />
-                  <span>{t('contacts.error')}</span>
+                  <span>{errorMessage || t('contacts.error')}</span>
                 </div>
               )}
 
@@ -264,7 +322,7 @@ export const SupportSection: React.FC = () => {
                 <button 
                   type="submit"
                   disabled={status === 'loading'}
-                  className="w-full bg-kmmr-green text-white font-bold py-4 rounded-xl uppercase tracking-widest transition-all hover:bg-green-600 active:scale-[0.99] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-kmmr-green/20"
+                  className={`w-full bg-kmmr-green text-white font-bold py-4 ${ui.btnPill} uppercase tracking-widest transition-all hover:bg-green-600 active:scale-[0.99] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-kmmr-green/20`}
                 >
                   {status === 'loading' ? (
                     <>
@@ -277,8 +335,11 @@ export const SupportSection: React.FC = () => {
                     </>
                   )}
                 </button>
-                <p className="text-xs text-gray-500 mt-4 text-center">
-                  {t('contacts.consent')}
+                <p className="text-xs text-gray-600 dark:text-gray-300 mt-4 text-center">
+                  {t('contacts.consent')}{' '}
+                  <Link to="/privacy" className="text-kmmr-pink underline underline-offset-2 font-semibold">
+                    {t('contacts.privacyLink')}
+                  </Link>
                 </p>
               </div>
             </form>

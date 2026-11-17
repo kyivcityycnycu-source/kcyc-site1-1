@@ -54,6 +54,9 @@ export const NAV_LINKS_EN = [
 
 export const NAV_LINKS = NAV_LINKS_UK;
 
+/** Google Form for individual participants (УЧАСНИКУ / «Приєднатися»). */
+export const PARTICIPANT_JOIN_FORM_URL = 'https://forms.gle/UKqw2hm1vRissead6';
+
 // --- PRINCIPLES OF ACTIVITY ---
 export const PRINCIPLES_UK = [
   {

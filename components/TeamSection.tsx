@@ -5,11 +5,12 @@ import { TeamMember, Department } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { onSnapshot, query, collection } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import { Loader2, Instagram, Copy, Check } from 'lucide-react';
+import { Instagram, Copy, Check } from 'lucide-react';
 import { OptimizedImage } from './ui/OptimizedImage';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { preloadImageUrls } from '../lib/preload';
 import { motion, AnimatePresence } from 'motion/react';
+import { TeamSkeletonGrid } from './ui/SectionSkeleton';
 
 interface TeamSectionProps {
   onlyModal?: boolean;
@@ -243,9 +244,7 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="animate-spin text-kmmr-blue dark:text-blue-400 w-10 h-10" />
-          </div>
+          <TeamSkeletonGrid />
         ) : (
           <div className="space-y-16">
             {departments.map((dept) => {
@@ -263,7 +262,7 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
                        {typeof dept.icon === 'string' ? (
                           <img 
                             src={dept.icon} 
-                            alt="" 
+                            alt={getDeptName(dept)} 
                             className="w-full h-full object-contain brightness-0 invert" 
                             style={{ filter: 'brightness(0) invert(1)' }}
                           />
@@ -283,13 +282,23 @@ export const TeamSection: React.FC<TeamSectionProps> = ({ onlyModal = false }) =
                       members.map((member) => (
                         <div 
                           key={member.id}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              navigate(`/team/${member.id}`, { 
+                                state: { backgroundLocation: location, fromHome: location.pathname === '/' } 
+                              });
+                            }
+                          }}
                           onClick={() => navigate(`/team/${member.id}`, { 
                             state: { 
                               backgroundLocation: location,
                               fromHome: location.pathname === '/' 
                             } 
                           })}
-                          className="group relative bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+                          className="group relative bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kmmr-pink"
                         >
                           <div className="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
                             <OptimizedImage 

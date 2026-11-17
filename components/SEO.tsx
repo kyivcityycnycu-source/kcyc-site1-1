@@ -16,7 +16,7 @@ export const SEO: React.FC<SEOProps> = ({
   description,
   keywords,
   url = 'https://kmmr.org/',
-  image = 'https://firebasestorage.googleapis.com/v0/b/kcyc-site.firebasestorage.app/o/LOGO%20KCYC%2FGroup%206680%20(1).png?alt=media&token=a82c8a88-8e02-40ba-9bcc-9126138fe47e',
+  image = 'https://firebasestorage.googleapis.com/v0/b/kcyc-site-b9544.firebasestorage.app/o/LOGO%20KCYC%2FFrame%201015.png?alt=media&token=20a95cbe-9e20-4477-a15d-56c2dfab5760',
   type = 'website',
 }) => {
   const { language } = useLanguage();
@@ -27,7 +27,7 @@ export const SEO: React.FC<SEOProps> = ({
     
   const defaultDescription = language === 'uk'
     ? "Київська Міська Молодіжна Рада (КММР) — Найбільше молодіжне обʼєднання Києва. Платформа для консолідованої взаємодії учасників молодіжної політики міста Київ, з метою спільної роботи над розвитком молодіжної сфери та формування активної всебічно розвиненої молодої особистості."
-    : "Kyiv City Youth Council (KCMY) — Kyiv's largest youth association. A platform for consolidated interaction of youth policy participants in the city of Kyiv, with the aim of joint work on the development of the youth sphere and the formation of an active, comprehensively developed young personality.";
+    : "Kyiv City Youth Council (KCYC) — Kyiv's largest youth association. A platform for consolidated interaction of youth policy participants in the city of Kyiv, with the aim of joint work on the development of the youth sphere and the formation of an active, comprehensively developed young personality.";
 
   const defaultKeywords = language === 'uk'
     ? 'КММР, Київська Міська Молодіжна Рада, молодь Києва, молодіжна політика, громадські організації, молодіжні ініціативи'

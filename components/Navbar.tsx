@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Menu, X, Globe, Moon, Sun } from 'lucide-react';
 import { NAV_LINKS_UK, NAV_LINKS_EN } from '../constants';
 import { Logo } from './Logo';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
-import { scrollToSection } from '../lib/scroll';
+import { ui } from '../lib/uiClasses';
+import { trackCtaClick } from '../services/analytics';
+import { PARTICIPANT_JOIN_FORM_URL } from '../constants';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
 
@@ -20,13 +21,10 @@ export const Navbar: React.FC = () => {
     setIsOpen(false);
   };
 
-  const handleJoinClick = () => {
+  const handleJoinClick = (place: 'navbar' | 'navbar_mobile' = 'navbar') => {
     setIsOpen(false);
-    if (location.pathname === '/') {
-      scrollToSection('contacts');
-    } else {
-      navigate('/contacts');
-    }
+    trackCtaClick('join', place);
+    window.open(PARTICIPANT_JOIN_FORM_URL, '_blank', 'noopener,noreferrer');
   };
 
   const toggleLanguage = () => {
@@ -61,8 +59,9 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center gap-3 ml-2">
               {/* Theme Switcher */}
               <button
+                type="button"
                 onClick={toggleTheme}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-kmmr-blue dark:text-gray-200 transition-colors"
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-kmmr-blue dark:text-gray-200 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kmmr-pink"
                 title="Toggle Theme"
               >
                 {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
@@ -70,8 +69,9 @@ export const Navbar: React.FC = () => {
 
               {/* Language Switcher */}
               <button 
+                type="button"
                 onClick={toggleLanguage}
-                className="flex items-center gap-1 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700 hover:border-kmmr-blue dark:hover:border-kmmr-pink transition-colors text-xs font-bold uppercase text-kmmr-blue dark:text-gray-200"
+                className="flex items-center gap-1 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700 hover:border-kmmr-blue dark:hover:border-kmmr-pink transition-colors text-xs font-bold uppercase text-kmmr-blue dark:text-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kmmr-pink"
               >
                 <Globe size={14} />
                 <span className={language === 'uk' ? 'text-kmmr-pink' : ''}>UA</span>
@@ -80,8 +80,9 @@ export const Navbar: React.FC = () => {
               </button>
 
               <button
-                onClick={handleJoinClick}
-                className="bg-kmmr-pink text-white px-6 py-2.5 rounded-full font-bold uppercase text-xs tracking-wider hover:bg-opacity-90 transition-all transform hover:scale-105 shadow-lg shadow-kmmr-pink/30"
+                type="button"
+                onClick={() => handleJoinClick('navbar')}
+                className={`bg-kmmr-pink text-white px-6 py-2.5 ${ui.btnPill} font-bold uppercase text-xs tracking-wider hover:bg-opacity-90 transition-all transform hover:scale-105 shadow-lg shadow-kmmr-pink/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
               >
                 {t('nav.join')}
               </button>
@@ -138,8 +139,9 @@ export const Navbar: React.FC = () => {
             ))}
             <div className="pt-4">
               <button
-                onClick={handleJoinClick}
-                className="w-full bg-kmmr-pink text-white px-6 py-3 rounded-lg font-bold uppercase hover:bg-opacity-90"
+                type="button"
+                onClick={() => handleJoinClick('navbar_mobile')}
+                className={`w-full bg-kmmr-pink text-white px-6 py-3 ${ui.btnPill} font-bold uppercase hover:bg-opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
               >
                 {t('nav.join')}
               </button>

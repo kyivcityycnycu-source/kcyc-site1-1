@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { Send, Loader2, CheckCircle, AlertCircle, AtSign, User, Phone, Mail, MessageSquare, ListTodo, ClipboardList, Briefcase, GraduationCap, Calendar, ChevronDown, Check } from 'lucide-react';
 import { Modal } from './ui/Modal';
 import { useLanguage } from '../context/LanguageContext';
-import { submitApplicationForm } from '../services/api';
+import { submitApplicationForm, isFormSpamError } from '../services/api';
 import { Opportunity } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import { HoneypotField } from './ui/HoneypotField';
+import { FIELD_MAX, ensureUaPhonePrefix, isValidEmail, isValidPhone, sanitizeFormValue } from '../lib/validation';
+import { trackFormSubmit } from '../services/analytics';
 
 export type FormFieldType = 'text' | 'textarea' | 'social' | 'select';
 
@@ -48,6 +52,10 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; phone?: string }>({});
+  const [honeypot, setHoneypot] = useState('');
+  const openedAt = useRef(Date.now());
 
   // Standard static fields
   const [staticData, setStaticData] = useState({
@@ -82,7 +90,11 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
     : getDefaultQuestions(opportunity.type, t);
 
   const handleStaticChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStaticData({ ...staticData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setStaticData({ ...staticData, [name]: sanitizeFormValue(name, value) });
+    if (name === 'email' || name === 'phone') {
+      setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const handleAnswerChange = (id: string, value: string) => {
@@ -112,10 +124,30 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
     }
   };
 
+  useEffect(() => {
+    if (isOpen) {
+      openedAt.current = Date.now();
+      setHoneypot('');
+      setErrorMessage(null);
+      setFieldErrors({});
+    }
+  }, [isOpen]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(false);
+    setErrorMessage(null);
+
+    const nextFields: { email?: string; phone?: string } = {};
+    if (!isValidEmail(staticData.email)) nextFields.email = t('contacts.invalidEmail');
+    if (!isValidPhone(staticData.phone)) nextFields.phone = t('contacts.invalidPhone');
+    setFieldErrors(nextFields);
+    if (Object.keys(nextFields).length > 0) {
+      trackFormSubmit('opportunity', 'validation_error');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       // Finalize answers
@@ -139,9 +171,10 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
         opportunityTitle: opportunity.title,
         type: opportunity.type,
         answers: finalAnswers
-      });
+      }, { honeypot, openedAt: openedAt.current });
 
       setSuccess(true);
+      trackFormSubmit('opportunity', 'success', { opportunity_type: opportunity.type });
       setTimeout(() => {
         setSuccess(false);
         onClose();
@@ -149,6 +182,14 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
     } catch (err) {
       console.error(err);
       setError(true);
+      trackFormSubmit('opportunity', 'error');
+      if (isFormSpamError(err) && err.code === 'rate_limit') {
+        setErrorMessage(t('contacts.rateLimit'));
+      } else if (isFormSpamError(err) && err.code === 'too_fast') {
+        setErrorMessage(t('contacts.tooFast'));
+      } else {
+        setErrorMessage(t('contacts.error'));
+      }
     } finally {
       setLoading(false);
     }
@@ -218,7 +259,8 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
                   </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6 relative">
+                  <HoneypotField value={honeypot} onChange={setHoneypot} />
                   {/* --- STANDARD FIELDS (Always present) --- */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="relative">
@@ -231,6 +273,8 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
                           required 
                           value={staticData.name}
                           onChange={handleStaticChange}
+                          maxLength={FIELD_MAX.name}
+                          autoComplete="name"
                           className={inputStyle}
                           placeholder={t('contacts.placeholders.name')}
                         />
@@ -247,10 +291,20 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
                           required 
                           value={staticData.phone}
                           onChange={handleStaticChange}
+                          onFocus={() => {
+                            if (!staticData.phone.trim()) {
+                              setStaticData((prev) => ({ ...prev, phone: ensureUaPhonePrefix('') }));
+                            }
+                          }}
+                          inputMode="tel"
+                          autoComplete="tel"
+                          maxLength={FIELD_MAX.phoneDisplay}
+                          aria-invalid={!!fieldErrors.phone}
                           className={inputStyle}
-                          placeholder="+380..."
+                          placeholder={t('contacts.phonePlaceholder')}
                         />
                       </div>
+                      {fieldErrors.phone && <p className="text-xs text-red-500 mt-1 ml-1">{fieldErrors.phone}</p>}
                     </div>
 
                     <div className="relative md:col-span-2">
@@ -263,10 +317,14 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
                           required 
                           value={staticData.email}
                           onChange={handleStaticChange}
+                          maxLength={FIELD_MAX.email}
+                          autoComplete="email"
+                          aria-invalid={!!fieldErrors.email}
                           className={inputStyle}
                           placeholder="email@example.com"
                         />
                       </div>
+                      {fieldErrors.email && <p className="text-xs text-red-500 mt-1 ml-1">{fieldErrors.email}</p>}
                     </div>
                   </div>
 
@@ -426,7 +484,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
                   {error && (
                     <div className="p-4 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-300 rounded-2xl flex items-center gap-3 text-sm border-2 border-red-100 dark:border-red-900/50 font-bold">
                       <AlertCircle size={18} />
-                      <span>{t('contacts.error')}</span>
+                      <span>{errorMessage || t('contacts.error')}</span>
                     </div>
                   )}
 
@@ -439,7 +497,10 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
                       {loading ? <Loader2 size={20} className="animate-spin" /> : <>{t('application.submit')} <Send size={18} /></>}
                     </button>
                     <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500 text-center mt-4 px-4 leading-relaxed font-medium">
-                      {t('contacts.consent')}
+                      {t('contacts.consent')}{' '}
+                      <Link to="/privacy" className="text-kmmr-pink underline underline-offset-2 font-semibold">
+                        {t('contacts.privacyLink')}
+                      </Link>
                     </p>
                   </div>
                 </form>

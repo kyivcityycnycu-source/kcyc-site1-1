@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 
 import { 
 
-  Users, FileText, Calendar, LogOut, Plus, Search, Trash2, Edit2, Download, Briefcase, CheckCircle, XCircle, Clock, Loader2, Save, GripVertical, List, Languages, Image as ImageIcon, Smile, Filter, ChevronDown, ChevronUp, Building2, Palette, Handshake, Link as LinkIcon, Settings, Mail, Instagram, Menu, X, Sun, Moon, Heart
+  Users, FileText, Calendar, LogOut, Plus, Search, Trash2, Edit2, Download, Briefcase, CheckCircle, XCircle, Clock, Loader2, Save, GripVertical, List, Languages, Image as ImageIcon, Smile, Filter, ChevronDown, ChevronUp, Building2, Palette, Handshake, Link as LinkIcon, Settings, Mail, Instagram, Menu, X, Sun, Moon, Heart, Lock, Unlock
 
 } from 'lucide-react';
 
@@ -85,7 +85,7 @@ export const AdminDashboard: React.FC = () => {
 
   // Submission Filters
 
-  const [submissionFilter, setSubmissionFilter] = useState<'event' | 'opportunity' | 'contact' | 'newsletter' | 'support' | 'internship'>('event');
+  const [submissionFilter, setSubmissionFilter] = useState<'event' | 'opportunity' | 'contact' | 'newsletter' | 'support' | 'internship' | 'participant'>('event');
 
   const [selectedDynamicFilter, setSelectedDynamicFilter] = useState<string>('all');
 
@@ -139,7 +139,7 @@ export const AdminDashboard: React.FC = () => {
 
   const [isAddingDept, setIsAddingDept] = useState(false);
 
-  const [newDept, setNewDept] = useState<Partial<Department>>({ color: '#031B47' });
+  const [newDept, setNewDept] = useState<Partial<Department>>({ color: '#031B47', recruitmentOpen: true });
 
   const [deptLang, setDeptLang] = useState<'uk' | 'en'>('uk');
 
@@ -612,6 +612,26 @@ export const AdminDashboard: React.FC = () => {
               alert("Не вдалося видалити елемент");
 
           }
+
+      }
+
+  };
+
+
+
+  const handleToggleDepartmentRecruitment = async (dept: Department) => {
+
+      const nextOpen = dept.recruitmentOpen === false;
+
+      try {
+
+          await updateDoc(doc(db, "departments", dept.id), { recruitmentOpen: nextOpen });
+
+          setDepartments(prev => prev.map(item => item.id === dept.id ? { ...item, recruitmentOpen: nextOpen } : item));
+
+      } catch (error: any) {
+
+          handleFirebaseError(error, 'зміни статусу набору');
 
       }
 
@@ -1196,6 +1216,7 @@ export const AdminDashboard: React.FC = () => {
       if (submissionFilter === 'support') return type === 'initiative_support';
       if (submissionFilter === 'internship') return type === 'internship_registration';
       if (submissionFilter === 'contact') return type === 'general_contact';
+      if (submissionFilter === 'participant') return type === 'participant_google_form';
       
       if (submissionFilter === 'event') {
         return type === 'opportunity_application' && subType === 'Event';
@@ -1721,7 +1742,9 @@ export const AdminDashboard: React.FC = () => {
 
           icon: iconUrl,
 
-          order: newDept.id ? (newDept.order !== undefined ? newDept.order : 999) : departments.length
+          order: newDept.id ? (newDept.order !== undefined ? newDept.order : 999) : departments.length,
+
+          recruitmentOpen: newDept.recruitmentOpen !== false
 
        };
 
@@ -1741,7 +1764,7 @@ export const AdminDashboard: React.FC = () => {
 
        setIsAddingDept(false);
 
-       setNewDept({ color: '#031B47' });
+       setNewDept({ color: '#031B47', recruitmentOpen: true });
 
        setFileToUpload(null);
 
@@ -2228,6 +2251,12 @@ export const AdminDashboard: React.FC = () => {
                     Заявки в команду
                   </button>
                   <button 
+                    onClick={() => { setSubmissionFilter('participant'); setSelectedDynamicFilter('all'); }}
+                    className={`px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all ${submissionFilter === 'participant' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                  >
+                    Учасники
+                  </button>
+                  <button 
                     onClick={() => { setSubmissionFilter('support'); setSelectedDynamicFilter('all'); }}
                     className={`px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all ${submissionFilter === 'support' ? 'bg-white dark:bg-gray-700 shadow text-kmmr-blue dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
                   >
@@ -2251,7 +2280,7 @@ export const AdminDashboard: React.FC = () => {
 
                 {/* Dynamic Dropdown Filter */}
 
-                {submissionFilter !== 'newsletter' && submissionFilter !== 'internship' && dynamicFilterOptions.length > 0 && (
+                {submissionFilter !== 'newsletter' && submissionFilter !== 'internship' && submissionFilter !== 'participant' && dynamicFilterOptions.length > 0 && (
 
                    <div className="relative w-full sm:w-auto">
 
@@ -2398,6 +2427,10 @@ export const AdminDashboard: React.FC = () => {
                           ) : submissionFilter === 'newsletter' ? (
 
                               <span className="text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-0.5 rounded">Підписка на новини</span>
+
+                          ) : submissionFilter === 'participant' ? (
+
+                              <span className="text-xs font-bold text-kmmr-pink bg-pink-50 dark:bg-pink-900/30 dark:text-pink-300 px-2 py-0.5 rounded">Учасник · Google Form</span>
 
                           ) : (
 
@@ -3703,6 +3736,32 @@ export const AdminDashboard: React.FC = () => {
 
                            </div>
 
+                           <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+
+                              <div>
+
+                                 <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Набір заявок у форму «Приєднатися»</p>
+
+                                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Якщо закрито — відділ не зʼявиться у списку для кандидатів</p>
+
+                              </div>
+
+                              <button
+
+                                 type="button"
+
+                                 onClick={() => setNewDept({...newDept, recruitmentOpen: newDept.recruitmentOpen === false})}
+
+                                 className={`shrink-0 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors ${newDept.recruitmentOpen === false ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200' : 'bg-kmmr-green/15 text-kmmr-green'}`}
+
+                              >
+
+                                 {newDept.recruitmentOpen === false ? <><Lock size={16}/> Закрито</> : <><Unlock size={16}/> Відкрито</>}
+
+                              </button>
+
+                           </div>
+
                            <button type="submit" disabled={loading} className="bg-kmmr-green text-white px-6 py-3 rounded-lg font-bold shadow-lg w-full flex justify-center items-center gap-2">{loading ? <Loader2 className="animate-spin" /> : <Save size={20} />} Зберегти Департамент</button>
 
                         </form>
@@ -3713,7 +3772,7 @@ export const AdminDashboard: React.FC = () => {
 
 
 
-                 <div onClick={() => { setNewDept({ color: '#031B47' }); setFileToUpload(null); setIsAddingDept(true); }} className="bg-white dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-6 flex items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                 <div onClick={() => { setNewDept({ color: '#031B47', recruitmentOpen: true }); setFileToUpload(null); setIsAddingDept(true); }} className="bg-white dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-6 flex items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
 
                      <Plus className="w-6 h-6 text-gray-400 mr-2" />
 
@@ -3755,7 +3814,17 @@ export const AdminDashboard: React.FC = () => {
 
                            <div className="flex-grow min-w-0">
 
-                              <h3 className="font-bold text-gray-800 dark:text-gray-200">{dept.name}</h3>
+                              <div className="flex items-center gap-2 flex-wrap mb-1">
+
+                                 <h3 className="font-bold text-gray-800 dark:text-gray-200">{dept.name}</h3>
+
+                                 <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${dept.recruitmentOpen === false ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200' : 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200'}`}>
+
+                                    {dept.recruitmentOpen === false ? 'Набір закрито' : 'Набір відкрито'}
+
+                                 </span>
+
+                              </div>
 
                               <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{dept.description}</p>
 
@@ -3771,7 +3840,9 @@ export const AdminDashboard: React.FC = () => {
 
                            <div className="flex flex-col gap-2">
 
-                              <button onClick={() => { setNewDept(dept); setIsAddingDept(true); window.scrollTo({top:0, behavior:'smooth'}); }} className="text-kmmr-blue dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-1 rounded"><Edit2 size={16}/></button>
+                              <button type="button" data-no-dnd="true" title={dept.recruitmentOpen === false ? 'Відкрити набір' : 'Закрити набір'} onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleDepartmentRecruitment(dept); }} className={`p-2 rounded-full transition-colors cursor-pointer z-50 ${dept.recruitmentOpen === false ? 'hover:bg-green-50 dark:hover:bg-green-900/20 text-amber-600' : 'hover:bg-amber-50 dark:hover:bg-amber-900/20 text-kmmr-green'}`}>{dept.recruitmentOpen === false ? <Unlock size={16} /> : <Lock size={16} />}</button>
+
+                              <button onClick={() => { setNewDept({ ...dept, recruitmentOpen: dept.recruitmentOpen !== false }); setIsAddingDept(true); window.scrollTo({top:0, behavior:'smooth'}); }} className="text-kmmr-blue dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-1 rounded"><Edit2 size={16}/></button>
 
                               <button type="button" data-no-dnd="true" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteDepartment(dept.id); }} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors cursor-pointer z-50"><Trash2 size={16} className="text-red-500" /></button>
 

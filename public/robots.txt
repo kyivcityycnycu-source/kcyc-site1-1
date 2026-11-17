@@ -1,7 +1,8 @@
 User-agent: *
 Allow: /
 
-# Забороняємо індексацію адміністративної панелі (якщо вона є)
 Disallow: /admin/
+Disallow: /login
+Disallow: /admin/dashboard
 
 Sitemap: https://kmmr.org/sitemap.xml

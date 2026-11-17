@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
 import { X, Send, GraduationCap, User, Mail, Phone, Building2, BookOpen, MessageSquare, CheckCircle, Instagram } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { useLanguage } from '../context/LanguageContext';
+import { assertFormAllowed, isFormSpamError } from '../lib/formGuard';
+import { HoneypotField } from './ui/HoneypotField';
+import { FIELD_MAX, ensureUaPhonePrefix, isValidEmail, isValidPhone, sanitizeFormValue } from '../lib/validation';
+import { trackFormSubmit } from '../services/analytics';
 
 interface InternshipModalProps {
   isOpen: boolean;
@@ -12,12 +17,17 @@ interface InternshipModalProps {
 }
 
 export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClose }) => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
+  const openedAt = useRef(Date.now());
+  const [honeypot, setHoneypot] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; phone?: string }>({});
 
   React.useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
+      openedAt.current = Date.now();
+      setHoneypot('');
     } else {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
@@ -43,9 +53,38 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const nextFields: { email?: string; phone?: string } = {};
+    if (!isValidEmail(formData.email)) nextFields.email = t('contacts.invalidEmail');
+    if (!isValidPhone(formData.phone)) nextFields.phone = t('contacts.invalidPhone');
+    setFieldErrors(nextFields);
+    if (Object.keys(nextFields).length > 0) {
+      trackFormSubmit('internship', 'validation_error');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
+      try {
+        assertFormAllowed({
+          formKey: 'internship',
+          honeypot,
+          openedAt: openedAt.current,
+        });
+      } catch (guardError) {
+        if (isFormSpamError(guardError) && guardError.code === 'honeypot') {
+          setIsSuccess(true);
+          // Silent honeypot — do not count as real conversion
+          setTimeout(() => {
+            setIsSuccess(false);
+            onClose();
+          }, 3000);
+          return;
+        }
+        throw guardError;
+      }
+
       await addDoc(collection(db, 'submissions'), {
         ...formData,
         formType: 'internship_registration',
@@ -53,6 +92,7 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
         createdAt: serverTimestamp()
       });
       setIsSuccess(true);
+      trackFormSubmit('internship', 'success');
       setTimeout(() => {
         setIsSuccess(false);
         setFormData({
@@ -64,18 +104,30 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
           specialization: '',
           message: ''
         });
+        setFieldErrors({});
         onClose();
       }, 3000);
     } catch (error) {
       console.error('Error submitting internship registration:', error);
-      alert(language === 'uk' ? 'Помилка при відправці. Спробуйте пізніше.' : 'Error submitting. Please try again later.');
+      trackFormSubmit('internship', 'error');
+      if (isFormSpamError(error) && error.code === 'rate_limit') {
+        alert(language === 'uk' ? 'Забагато спроб. Спробуйте пізніше.' : 'Too many attempts. Please try later.');
+      } else if (isFormSpamError(error) && error.code === 'too_fast') {
+        alert(language === 'uk' ? 'Зачекайте кілька секунд і спробуйте знову.' : 'Please wait a few seconds and try again.');
+      } else {
+        alert(language === 'uk' ? 'Помилка при відправці. Спробуйте пізніше.' : 'Error submitting. Please try again later.');
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: sanitizeFormValue(name, value) }));
+    if (name === 'email' || name === 'phone') {
+      setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   return createPortal(
@@ -130,8 +182,9 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
               <motion.form 
                 key="form"
                 onSubmit={handleSubmit}
-                className="space-y-6"
+                className="space-y-6 relative"
               >
+                <HoneypotField value={honeypot} onChange={setHoneypot} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="relative">
                     <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
@@ -145,6 +198,8 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
+                        maxLength={FIELD_MAX.name}
+                        autoComplete="name"
                         placeholder={language === 'uk' ? 'Іван Іванов' : 'John Doe'}
                         className="w-full bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-kmmr-blue dark:focus:border-blue-500/50 rounded-2xl py-3.5 pl-12 pr-4 text-gray-900 dark:text-white transition-all outline-none font-medium"
                       />
@@ -163,10 +218,14 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
+                        maxLength={FIELD_MAX.email}
+                        autoComplete="email"
+                        aria-invalid={!!fieldErrors.email}
                         placeholder="example@mail.com"
                         className="w-full bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-kmmr-blue dark:focus:border-blue-500/50 rounded-2xl py-3.5 pl-12 pr-4 text-gray-900 dark:text-white transition-all outline-none font-medium"
                       />
                     </div>
+                    {fieldErrors.email && <p className="text-xs text-red-500 mt-1 ml-1">{fieldErrors.email}</p>}
                   </div>
 
                   <div className="relative">
@@ -181,10 +240,20 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="+380..."
+                        onFocus={() => {
+                          if (!formData.phone.trim()) {
+                            setFormData((prev) => ({ ...prev, phone: ensureUaPhonePrefix('') }));
+                          }
+                        }}
+                        inputMode="tel"
+                        autoComplete="tel"
+                        maxLength={FIELD_MAX.phoneDisplay}
+                        aria-invalid={!!fieldErrors.phone}
+                        placeholder={t('contacts.phonePlaceholder')}
                         className="w-full bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-kmmr-blue dark:focus:border-blue-500/50 rounded-2xl py-3.5 pl-12 pr-4 text-gray-900 dark:text-white transition-all outline-none font-medium"
                       />
                     </div>
+                    {fieldErrors.phone && <p className="text-xs text-red-500 mt-1 ml-1">{fieldErrors.phone}</p>}
                   </div>
 
                   <div className="relative">
@@ -199,6 +268,7 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
                         name="socialTag"
                         value={formData.socialTag}
                         onChange={handleChange}
+                        maxLength={FIELD_MAX.social}
                         placeholder="@username"
                         className="w-full bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-kmmr-blue dark:focus:border-blue-500/50 rounded-2xl py-3.5 pl-12 pr-4 text-gray-900 dark:text-white transition-all outline-none font-medium"
                       />
@@ -217,6 +287,7 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
                         name="specialization"
                         value={formData.specialization}
                         onChange={handleChange}
+                        maxLength={FIELD_MAX.shortText}
                         placeholder={language === 'uk' ? 'Журналістика, PR...' : 'Journalism, PR...'}
                         className="w-full bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-kmmr-blue dark:focus:border-blue-500/50 rounded-2xl py-3.5 pl-12 pr-4 text-gray-900 dark:text-white transition-all outline-none font-medium"
                       />
@@ -235,6 +306,7 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
                         name="university"
                         value={formData.university}
                         onChange={handleChange}
+                        maxLength={FIELD_MAX.shortText}
                         placeholder={language === 'uk' ? 'Назва ВНЗ' : 'University name'}
                         className="w-full bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-kmmr-blue dark:focus:border-blue-500/50 rounded-2xl py-3.5 pl-12 pr-4 text-gray-900 dark:text-white transition-all outline-none font-medium"
                       />
@@ -253,6 +325,7 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
                       value={formData.message}
                       onChange={handleChange}
                       rows={3}
+                      maxLength={FIELD_MAX.longText}
                       placeholder={language === 'uk' ? 'Розкажіть трохи про себе...' : 'Tell us a bit about yourself...'}
                       className="w-full bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-kmmr-blue dark:focus:border-blue-500/50 rounded-2xl py-3.5 pl-12 pr-4 text-gray-900 dark:text-white transition-all outline-none font-medium resize-none"
                     />
@@ -276,8 +349,11 @@ export const InternshipModal: React.FC<InternshipModalProps> = ({ isOpen, onClos
 
                 <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500 text-center mt-4 px-4 leading-relaxed font-medium">
                   {language === 'uk' 
-                    ? 'Натискаючи кнопку "Відправити заявку", ви даєте згоду на обробку персональних даних.' 
-                    : 'By clicking "Submit Application", you consent to the processing of personal data.'}
+                    ? 'Натискаючи кнопку "Відправити заявку", ви даєте згоду на обробку персональних даних. ' 
+                    : 'By clicking "Submit Application", you consent to the processing of personal data. '}
+                  <Link to="/privacy" onClick={onClose} className="text-kmmr-pink underline underline-offset-2 font-semibold">
+                    {language === 'uk' ? 'Політика конфіденційності' : 'Privacy policy'}
+                  </Link>
                 </p>
               </motion.form>
             )}

@@ -1,27 +1,23 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { OptimizedImage } from './ui/OptimizedImage';
 import { useLanguage } from '../context/LanguageContext';
-import { trackEvent } from '../services/analytics';
-import { scrollToSection } from '../lib/scroll';
+import { trackCtaClick } from '../services/analytics';
+import { PARTICIPANT_JOIN_FORM_URL } from '../constants';
+import { ui } from '../lib/uiClasses';
 
 export const HeroSection: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { t } = useLanguage();
 
   const handleJoinClick = () => {
-    trackEvent('Hero', 'Click Join Team', 'Hero Section');
-    if (location.pathname === '/') {
-      scrollToSection('contacts');
-    } else {
-      navigate('/contacts');
-    }
+    trackCtaClick('join', 'hero');
+    window.open(PARTICIPANT_JOIN_FORM_URL, '_blank', 'noopener,noreferrer');
   };
 
   const handleSupportClick = () => {
-    trackEvent('Hero', 'Click Support', 'Hero Section');
+    trackCtaClick('support', 'hero');
     navigate('/support');
   };
 
@@ -60,18 +56,20 @@ export const HeroSection: React.FC = () => {
             {t('hero.subtitle')}
           </p>
           
-          {/* Adjusted buttons for mobile */}
+          {/* Primary: Join. Secondary: Support (outline only) */}
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
             <button 
+              type="button"
               onClick={handleJoinClick}
-              className="group bg-kmmr-pink text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-bold uppercase tracking-wider hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-kmmr-pink/40 text-sm md:text-base"
+              className={`group bg-kmmr-pink text-white px-6 py-3 md:px-8 md:py-4 ${ui.btnPill} font-bold uppercase tracking-wider hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-kmmr-pink/40 text-sm md:text-base`}
             >
               {t('hero.btnJoin')}
               <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
             </button>
             <button 
+              type="button"
               onClick={handleSupportClick}
-              className="group bg-kmmr-green text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-bold uppercase tracking-wider hover:bg-opacity-90 transition-all flex items-center justify-center shadow-lg shadow-kmmr-green/40 text-sm md:text-base"
+              className={`group bg-transparent text-kmmr-green border-2 border-kmmr-green px-6 py-3 md:px-8 md:py-4 ${ui.btnPill} font-bold uppercase tracking-wider hover:bg-kmmr-green/15 transition-all flex items-center justify-center text-sm md:text-base`}
             >
               {t('hero.btnSupport')}
             </button>

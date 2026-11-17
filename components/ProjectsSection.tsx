@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PROJECTS_UK, PROJECTS_EN } from '../constants';
-import { ExternalLink, Calendar, Loader2, ArrowRight, Clock } from 'lucide-react';
+import { ExternalLink, Calendar, ArrowRight, Clock } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { onSnapshot, query, collection } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
@@ -10,6 +10,10 @@ import { OptimizedImage } from './ui/OptimizedImage';
 import { ApplicationModal } from './ApplicationModal';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { preloadImageUrls } from '../lib/preload';
+import { ProjectsSkeletonGrid, EmptyState } from './ui/SectionSkeleton';
+import { formatDisplayDate } from '../lib/dateDisplay';
+import { ui } from '../lib/uiClasses';
+import { trackCtaClick, trackProjectOpen } from '../services/analytics';
 
 interface ProjectsSectionProps {
   limit?: number;
@@ -181,7 +185,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
                 {selectedProject.deadline && (
                   <div className="flex items-center gap-2 text-red-500 font-bold mb-4 text-sm bg-red-50 dark:bg-red-900/20 inline-block px-3 py-1 rounded-lg">
                     <Clock size={16} />
-                    <span>Дедлайн реєстрації: {new Date(selectedProject.deadline).toLocaleDateString('uk-UA')}</span>
+                    <span>{language === 'uk' ? 'Дедлайн реєстрації' : 'Registration deadline'}: {formatDisplayDate(selectedProject.deadline, language)}</span>
                   </div>
                 )}
                 
@@ -192,7 +196,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
                 {isActiveProject(selectedProject) ? (
                    <button 
                       onClick={() => handleRegisterClick(selectedProject)}
-                      className="w-full bg-kmmr-pink hover:bg-pink-600 text-white text-lg font-bold py-4 rounded-xl shadow-lg shadow-pink-200 dark:shadow-none transition-all flex items-center justify-center gap-2"
+                      className="w-full bg-kmmr-pink hover:bg-pink-600 text-white text-lg font-bold py-4 rounded-full shadow-lg shadow-pink-200 dark:shadow-none transition-all flex items-center justify-center gap-2"
                    >
                       Зареєструватися на подію <ArrowRight size={20} />
                    </button>
@@ -202,13 +206,13 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
                        href={selectedProject.instagramLink} 
                        target="_blank" 
                        rel="noopener noreferrer"
-                       className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 hover:opacity-90"
+                       className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg font-bold py-4 rounded-full shadow-lg transition-all flex items-center justify-center gap-2 hover:opacity-90"
                      >
                        <span>Звіт в Instagram</span>
                        <ExternalLink size={20} />
                      </a>
                    ) : (
-                     <div className="w-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-bold py-4 rounded-xl text-center">
+                     <div className="w-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-bold py-4 rounded-full text-center">
                        Подія завершена
                      </div>
                    )
@@ -239,9 +243,9 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="animate-spin text-kmmr-blue dark:text-blue-400 w-10 h-10" />
-          </div>
+          <ProjectsSkeletonGrid count={limit || 3} />
+        ) : displayedProjects.length === 0 ? (
+          <EmptyState title={t('projects.emptyTitle')} description={t('projects.emptyDesc')} />
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -252,8 +256,19 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
 
                 return (
                   <div 
-                    key={project.id} 
+                    key={project.id}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        navigate(`/projects/${project.id}`, { 
+                          state: { backgroundLocation: location, fromHome: isHome } 
+                        });
+                      }
+                    }}
                     onClick={() => {
+                      trackProjectOpen('card', project.id);
                       navigate(`/projects/${project.id}`, { 
                         state: { 
                           backgroundLocation: location,
@@ -261,7 +276,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
                         } 
                       });
                     }}
-                    className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full animate-fade-in-up cursor-pointer group transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700"
+                    className={`bg-white dark:bg-gray-800 ${ui.card} overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full animate-fade-in-up cursor-pointer group transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kmmr-pink`}
                   >
                     <div className="w-full aspect-[2/1] overflow-hidden relative">
                       <OptimizedImage 
@@ -270,17 +285,11 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         containerClassName="absolute inset-0 w-full h-full"
                       />
-                      
-                      <div className="absolute inset-0 bg-kmmr-blue/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <span className="text-white font-bold border border-white/80 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                          {t('projects.details')}
-                        </span>
-                      </div>
                     </div>
                     <div className="p-6 flex-grow flex flex-col">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2 text-sm text-kmmr-pink font-semibold flex-wrap">
-                            <div className="flex items-center gap-1"><Calendar size={14} /><span>{project.date}</span></div>
+                            <div className="flex items-center gap-1"><Calendar size={14} /><span>{formatDisplayDate(project.date, language)}</span></div>
                             {project.ownershipType === 'support' && <span className="text-[10px] text-gray-500 border-l border-gray-300 pl-2 uppercase font-bold">За підтримки КММР</span>}
                             {project.ownershipType === 'partner' && project.partnerName && <span className="text-[10px] text-gray-500 border-l border-gray-300 pl-2 uppercase font-bold">{project.partnerName}</span>}
                         </div>
@@ -306,7 +315,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
                             });
                           }
                         }}
-                        className={`mt-auto w-full flex items-center justify-center gap-2 py-3 rounded-xl transition-all duration-300 font-bold ${
+                        className={`mt-auto w-full flex items-center justify-center gap-2 py-3 ${ui.btnPill} transition-all duration-300 font-bold ${
                           active 
                             ? 'bg-kmmr-pink text-white hover:bg-pink-600 shadow-md hover:shadow-lg' 
                             : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 group-hover:bg-kmmr-blue group-hover:text-white dark:group-hover:bg-blue-400 dark:group-hover:text-white'
@@ -324,7 +333,11 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
             {limit && (
               <div className="mt-12 text-center animate-fade-in-up">
                 <button 
-                  onClick={() => navigate('/projects')}
+                  type="button"
+                  onClick={() => {
+                    trackCtaClick('view_all_projects', isHome ? 'projects_home' : 'projects_page');
+                    navigate('/projects');
+                  }}
                   className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-kmmr-blue dark:border-blue-400 text-kmmr-blue dark:text-blue-400 rounded-full font-bold uppercase tracking-wider hover:bg-kmmr-blue hover:text-white dark:hover:bg-blue-400 dark:hover:text-gray-900 transition-all duration-300"
                 >
                   {t('projects.viewAll')}
@@ -363,7 +376,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
               {selectedProject.deadline && (
                 <div className="flex items-center gap-2 text-red-500 font-bold mb-4 text-sm bg-red-50 dark:bg-red-900/20 inline-block px-3 py-1 rounded-lg">
                   <Clock size={16} />
-                  <span>Дедлайн реєстрації: {new Date(selectedProject.deadline).toLocaleDateString('uk-UA')}</span>
+                  <span>{language === 'uk' ? 'Дедлайн реєстрації' : 'Registration deadline'}: {formatDisplayDate(selectedProject.deadline, language)}</span>
                 </div>
               )}
               
@@ -374,7 +387,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
               {isActiveProject(selectedProject) ? (
                  <button 
                     onClick={() => handleRegisterClick(selectedProject)}
-                    className="w-full bg-kmmr-pink hover:bg-pink-600 text-white text-lg font-bold py-4 rounded-xl shadow-lg shadow-pink-200 dark:shadow-none transition-all flex items-center justify-center gap-2"
+                    className="w-full bg-kmmr-pink hover:bg-pink-600 text-white text-lg font-bold py-4 rounded-full shadow-lg shadow-pink-200 dark:shadow-none transition-all flex items-center justify-center gap-2"
                  >
                     Зареєструватися на подію <ArrowRight size={20} />
                  </button>
@@ -384,13 +397,13 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ limit, isHome 
                      href={selectedProject.instagramLink} 
                      target="_blank" 
                      rel="noopener noreferrer"
-                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 hover:opacity-90"
+                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg font-bold py-4 rounded-full shadow-lg transition-all flex items-center justify-center gap-2 hover:opacity-90"
                    >
                      <span>Звіт в Instagram</span>
                      <ExternalLink size={20} />
                    </a>
                  ) : (
-                   <div className="w-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-bold py-4 rounded-xl text-center">
+                   <div className="w-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-bold py-4 rounded-full text-center">
                      Подія завершена
                    </div>
                  )
