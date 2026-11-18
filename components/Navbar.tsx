@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Globe, Moon, Sun } from 'lucide-react';
 import { NAV_LINKS_UK, NAV_LINKS_EN } from '../constants';
@@ -12,7 +12,8 @@ import { openExternal } from '../lib/openExternal';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showNavJoin, setShowNavJoin] = useState(true);
+  /** Home only: true after user scrolls past hero. Starts false to avoid reload flash. */
+  const [pastHero, setPastHero] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
@@ -20,15 +21,17 @@ export const Navbar: React.FC = () => {
 
   const currentLinks = language === 'uk' ? NAV_LINKS_UK : NAV_LINKS_EN;
   const isHome = location.pathname === '/';
+  // Other pages: always visible. Home: CSS defaults to hidden until pastHero.
+  const showNavJoin = !isHome || pastHero;
 
-  // On home: hide nav «Приєднатися» while hero CTA is on screen (avoids duplicate CTAs).
-  useEffect(() => {
+  // useLayoutEffect: hide before paint on home (no flicker on reload / client nav).
+  useLayoutEffect(() => {
     if (!isHome) {
-      setShowNavJoin(true);
+      setPastHero(false);
       return;
     }
 
-    setShowNavJoin(false);
+    setPastHero(false);
     let cancelled = false;
     let observer: IntersectionObserver | null = null;
     let retryTimer: number | undefined;
@@ -38,7 +41,7 @@ export const Navbar: React.FC = () => {
       if (!heroCta) return false;
       observer = new IntersectionObserver(
         ([entry]) => {
-          if (!cancelled) setShowNavJoin(!entry.isIntersecting);
+          if (!cancelled) setPastHero(!entry.isIntersecting);
         },
         { root: null, threshold: 0.15, rootMargin: '-80px 0px 0px 0px' }
       );
@@ -129,11 +132,8 @@ export const Navbar: React.FC = () => {
                 onClick={() => handleJoinClick('navbar')}
                 aria-hidden={!showNavJoin}
                 tabIndex={showNavJoin ? 0 : -1}
-                className={`bg-kmmr-pink text-white px-6 py-2.5 ${ui.btnPill} font-bold uppercase text-xs tracking-wider hover:bg-opacity-90 shadow-lg shadow-kmmr-pink/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all duration-300 ${
-                  showNavJoin
-                    ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
-                    : 'opacity-0 -translate-y-1 scale-95 pointer-events-none'
-                }`}
+                data-visible={showNavJoin ? 'true' : 'false'}
+                className={`nav-join-cta bg-kmmr-pink text-white px-6 py-2.5 ${ui.btnPill} font-bold uppercase text-xs tracking-wider shadow-lg shadow-kmmr-pink/30 hover:bg-opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
               >
                 {t('nav.join')}
               </button>

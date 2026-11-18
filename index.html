@@ -123,6 +123,24 @@
         background: #D7269B;
       }
 
+      /* Nav join CTA: hidden by default — avoids flash on home reload; JS sets data-visible after hero scroll */
+      .nav-join-cta {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-4px) scale(0.95);
+        transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+      }
+      .nav-join-cta[data-visible="true"] {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0) scale(1);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .nav-join-cta {
+          transition: none;
+        }
+      }
+
       /* Shimmer Animation */
       @keyframes shimmer {
         0% { background-position: -468px 0; }
