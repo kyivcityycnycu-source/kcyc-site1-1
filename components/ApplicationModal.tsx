@@ -73,15 +73,23 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
     handle: ''
   });
 
-  // Initialize fields when opportunity changes
+  // Initialize fields when opportunity changes / modal opens
   useEffect(() => {
     if (isOpen) {
       setAnswers({});
       setSocialState({ platform: 'Instagram', handle: '' });
       setStaticData({ name: '', phone: '', email: '' });
+      openedAt.current = Date.now();
+      setHoneypot('');
+      setErrorMessage(null);
+      setFieldErrors({});
+      setError(false);
+      setSuccess(false);
+      setLoading(false);
     }
   }, [isOpen, opportunity]);
 
+  // Hooks must run before any early return (otherwise modal crashes when opportunity loads).
   if (!opportunity) return null;
 
   // Determine which questions to show
@@ -102,11 +110,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
   };
 
   const handleSocialChange = (field: 'platform' | 'handle', value: string) => {
-    const newState = { ...socialState, [field]: value };
-    setSocialState(newState);
-    // Automatically update the 'social' answer key if it exists in questions
-    // This assumes the question ID for social media is 'social' or similar, 
-    // but in dynamic forms, we map it by the question ID.
+    setSocialState({ ...socialState, [field]: value });
   };
 
   const handleSelectChange = (qId: string, option: string, isMultiple: boolean) => {
@@ -123,15 +127,6 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
       setAnswers(prev => ({ ...prev, [qId]: option }));
     }
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      openedAt.current = Date.now();
-      setHoneypot('');
-      setErrorMessage(null);
-      setFieldErrors({});
-    }
-  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

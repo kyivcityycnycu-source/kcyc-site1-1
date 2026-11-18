@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Globe, Moon, Sun } from 'lucide-react';
 import { NAV_LINKS_UK, NAV_LINKS_EN } from '../constants';
 import { Logo } from './Logo';
@@ -8,14 +8,59 @@ import { useTheme } from '../context/ThemeContext';
 import { ui } from '../lib/uiClasses';
 import { trackCtaClick } from '../services/analytics';
 import { PARTICIPANT_JOIN_FORM_URL } from '../constants';
+import { openExternal } from '../lib/openExternal';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showNavJoin, setShowNavJoin] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
 
   const currentLinks = language === 'uk' ? NAV_LINKS_UK : NAV_LINKS_EN;
+  const isHome = location.pathname === '/';
+
+  // On home: hide nav «Приєднатися» while hero CTA is on screen (avoids duplicate CTAs).
+  useEffect(() => {
+    if (!isHome) {
+      setShowNavJoin(true);
+      return;
+    }
+
+    setShowNavJoin(false);
+    let cancelled = false;
+    let observer: IntersectionObserver | null = null;
+    let retryTimer: number | undefined;
+
+    const attach = () => {
+      const heroCta = document.getElementById('hero-join-cta');
+      if (!heroCta) return false;
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!cancelled) setShowNavJoin(!entry.isIntersecting);
+        },
+        { root: null, threshold: 0.15, rootMargin: '-80px 0px 0px 0px' }
+      );
+      observer.observe(heroCta);
+      return true;
+    };
+
+    if (!attach()) {
+      retryTimer = window.setInterval(() => {
+        if (attach() && retryTimer) window.clearInterval(retryTimer);
+      }, 50);
+      window.setTimeout(() => {
+        if (retryTimer) window.clearInterval(retryTimer);
+      }, 3000);
+    }
+
+    return () => {
+      cancelled = true;
+      if (retryTimer) window.clearInterval(retryTimer);
+      observer?.disconnect();
+    };
+  }, [isHome, location.key]);
 
   const handleNavClick = () => {
     setIsOpen(false);
@@ -24,7 +69,7 @@ export const Navbar: React.FC = () => {
   const handleJoinClick = (place: 'navbar' | 'navbar_mobile' = 'navbar') => {
     setIsOpen(false);
     trackCtaClick('join', place);
-    window.open(PARTICIPANT_JOIN_FORM_URL, '_blank', 'noopener,noreferrer');
+    openExternal(PARTICIPANT_JOIN_FORM_URL);
   };
 
   const toggleLanguage = () => {
@@ -82,7 +127,13 @@ export const Navbar: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleJoinClick('navbar')}
-                className={`bg-kmmr-pink text-white px-6 py-2.5 ${ui.btnPill} font-bold uppercase text-xs tracking-wider hover:bg-opacity-90 transition-all transform hover:scale-105 shadow-lg shadow-kmmr-pink/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
+                aria-hidden={!showNavJoin}
+                tabIndex={showNavJoin ? 0 : -1}
+                className={`bg-kmmr-pink text-white px-6 py-2.5 ${ui.btnPill} font-bold uppercase text-xs tracking-wider hover:bg-opacity-90 shadow-lg shadow-kmmr-pink/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all duration-300 ${
+                  showNavJoin
+                    ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
+                    : 'opacity-0 -translate-y-1 scale-95 pointer-events-none'
+                }`}
               >
                 {t('nav.join')}
               </button>
@@ -137,15 +188,17 @@ export const Navbar: React.FC = () => {
                 {link.name}
               </NavLink>
             ))}
-            <div className="pt-4">
-              <button
-                type="button"
-                onClick={() => handleJoinClick('navbar_mobile')}
-                className={`w-full bg-kmmr-pink text-white px-6 py-3 ${ui.btnPill} font-bold uppercase hover:bg-opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
-              >
-                {t('nav.join')}
-              </button>
-            </div>
+            {showNavJoin && (
+              <div className="pt-4">
+                <button
+                  type="button"
+                  onClick={() => handleJoinClick('navbar_mobile')}
+                  className={`w-full bg-kmmr-pink text-white px-6 py-3 ${ui.btnPill} font-bold uppercase hover:bg-opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
+                >
+                  {t('nav.join')}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

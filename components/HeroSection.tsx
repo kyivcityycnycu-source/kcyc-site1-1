@@ -5,6 +5,7 @@ import { OptimizedImage } from './ui/OptimizedImage';
 import { useLanguage } from '../context/LanguageContext';
 import { trackCtaClick } from '../services/analytics';
 import { PARTICIPANT_JOIN_FORM_URL } from '../constants';
+import { openExternal } from '../lib/openExternal';
 import { ui } from '../lib/uiClasses';
 
 export const HeroSection: React.FC = () => {
@@ -13,7 +14,7 @@ export const HeroSection: React.FC = () => {
 
   const handleJoinClick = () => {
     trackCtaClick('join', 'hero');
-    window.open(PARTICIPANT_JOIN_FORM_URL, '_blank', 'noopener,noreferrer');
+    openExternal(PARTICIPANT_JOIN_FORM_URL);
   };
 
   const handleSupportClick = () => {
@@ -60,6 +61,7 @@ export const HeroSection: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
             <button 
               type="button"
+              id="hero-join-cta"
               onClick={handleJoinClick}
               className={`group bg-kmmr-pink text-white px-6 py-3 md:px-8 md:py-4 ${ui.btnPill} font-bold uppercase tracking-wider hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-kmmr-pink/40 text-sm md:text-base`}
             >

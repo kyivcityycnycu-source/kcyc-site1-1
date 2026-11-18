@@ -10,7 +10,19 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { preloadImageUrls } from '../lib/preload';
 import { EmptyState, CardSkeleton } from './ui/SectionSkeleton';
 import { formatDisplayDate } from '../lib/dateDisplay';
+import { PARTICIPANT_JOIN_FORM_URL } from '../constants';
+import { openExternal } from '../lib/openExternal';
 import { trackOpportunityApply } from '../services/analytics';
+
+/** Prefer on-site ApplicationModal; Google Form only if set and not the join Form. */
+const shouldOpenExternalForm = (opp: Opportunity) => {
+  const link = (opp.googleFormLink || '').trim();
+  if (!link) return false;
+  if (opp.hasRegistration === false) return false;
+  // Join Form is for «Приєднатися», not opportunities apply
+  if (link === PARTICIPANT_JOIN_FORM_URL || link.includes('UKqw2hm1vRissead6')) return false;
+  return true;
+};
 
 interface OpportunitiesSectionProps {
   onlyModal?: boolean;
@@ -245,16 +257,16 @@ export const OpportunitiesSection: React.FC<OpportunitiesSectionProps> = ({ only
                   onClick={(e) => {
                     e.stopPropagation();
                     trackOpportunityApply('list');
-                    if (opp.googleFormLink) {
-                      window.open(opp.googleFormLink, '_blank');
-                    } else {
-                      navigate(`/opportunities/${opp.id}`, { 
-                        state: { 
-                          backgroundLocation: location,
-                          fromHome: location.pathname === '/' 
-                        } 
-                      });
+                    if (shouldOpenExternalForm(opp)) {
+                      openExternal(opp.googleFormLink!);
+                      return;
                     }
+                    navigate(`/opportunities/${opp.id}`, { 
+                      state: { 
+                        backgroundLocation: location,
+                        fromHome: location.pathname === '/' 
+                      } 
+                    });
                   }}
                   className="text-sm font-bold text-kmmr-blue dark:text-blue-400 border-b-2 border-transparent group-hover:border-kmmr-pink transition-all self-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kmmr-pink"
                 >

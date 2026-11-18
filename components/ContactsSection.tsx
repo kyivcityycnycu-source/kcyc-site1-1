@@ -3,6 +3,7 @@ import { ExternalLink, Users } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { PARTICIPANT_JOIN_FORM_URL } from '../constants';
 import { trackCtaClick } from '../services/analytics';
+import { openExternal } from '../lib/openExternal';
 import { ui } from '../lib/uiClasses';
 
 export const ContactsSection: React.FC = () => {
@@ -10,7 +11,7 @@ export const ContactsSection: React.FC = () => {
 
   const openJoinForm = () => {
     trackCtaClick('join', 'contacts');
-    window.open(PARTICIPANT_JOIN_FORM_URL, '_blank', 'noopener,noreferrer');
+    openExternal(PARTICIPANT_JOIN_FORM_URL);
   };
 
   return (
